@@ -16,6 +16,7 @@ const BrushPicker = ({
   onChangeColor,
   onChangeStroke,
   onPressMore,
+  onBrushPickerToggle,
 }) => {
   return (
     <AnimatedComponent
@@ -40,6 +41,16 @@ const BrushPicker = ({
             name="apps-outline"
           />
         </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => onBrushPickerToggle({toggle: false, fromPicker: true})}
+          style={localStyles.moreButton}>
+          <Icon
+            style={localStyles.moreIcon}
+            size={20}
+            color={darkCharcoal}
+            name="caret-back-outline"
+          />
+        </TouchableOpacity>
       </View>
     </AnimatedComponent>
   );
@@ -52,6 +63,7 @@ BrushPicker.propTypes = {
   onChangeColor: PropTypes.func,
   onChangeStroke: PropTypes.func,
   onPressMore: PropTypes.func,
+  onBrushPickerToggle: PropTypes.func,
 };
 
 BrushPicker.defaultProps = {};

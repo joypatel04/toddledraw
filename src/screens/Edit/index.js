@@ -4,6 +4,7 @@ import idx from 'idx';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import Svg, {Path, G} from 'react-native-svg';
 import ViewShot from 'react-native-view-shot';
+import Icon from 'react-native-vector-icons/dist/Ionicons';
 
 import AnimatedComponent from '../../components/AnimatedComponent';
 import Header from './components/Header';
@@ -14,6 +15,8 @@ import styles from '../../themes/styles';
 import localStyles from './styles';
 import DrawingPen from '../../utils/drawingTools/drawingPen';
 import DrawPoint from '../../utils/drawingTools/drawPoint';
+import {darkCharcoal} from '../../themes/colors';
+import {TouchableOpacity} from 'react-native-gesture-handler';
 
 class Edit extends Component {
   constructor(props) {
@@ -39,6 +42,7 @@ class Edit extends Component {
       footerChildrenAnimation: null,
       sideAnimation: null,
       sideChildrenAnimation: null,
+      sidePointAnimation: null,
     };
 
     this.panResponder = PanResponder.create({
@@ -174,6 +178,12 @@ class Edit extends Component {
   };
 
   onPressTool = (tool) => {
+    if (tool === 'eraser') {
+      this.onBrushPickerToggle({toggle: false, tool});
+    } else {
+      this.onBrushPickerToggle({toggle: true});
+    }
+
     const {selectedTool} = this.state;
     if (!selectedTool) {
       this.setState({
@@ -227,6 +237,31 @@ class Edit extends Component {
     });
   };
 
+  onBrushPickerToggle = ({toggle, fromPicker, tool}) => {
+    if (fromPicker) {
+      this.setState({
+        sideAnimation: !toggle
+          ? getAnimation('slideLeft')
+          : getAnimation('slideRight'),
+        siddeChildrenAnimation: !toggle
+          ? getAnimation('fadeOut')
+          : getAnimation('fadeIn'),
+        sidePointAnimation: toggle
+          ? getAnimation('slideLeft')
+          : getAnimation('slideRight'),
+      });
+    } else {
+      this.setState({
+        sideAnimation: !toggle
+          ? getAnimation('slideLeft')
+          : getAnimation('slideRight'),
+        siddeChildrenAnimation: !toggle
+          ? getAnimation('fadeOut')
+          : getAnimation('fadeIn'),
+      });
+    }
+  };
+
   render() {
     const {route, navigation} = this.props;
     const primaryColor = idx(route, (_) => _.params.primaryColor) || '#000';
@@ -247,6 +282,7 @@ class Edit extends Component {
       footerChildrenAnimation,
       sideAnimation,
       sideChildrenAnimation,
+      sidePointAnimation,
     } = this.state;
 
     const AllStrokes = previousStrokes.map((stroke, index) => {
@@ -350,15 +386,39 @@ class Edit extends Component {
               duration={100}
               customStyle={localStyles.sideHeader}
               childrenAnimation={sideAnimation}>
-              <BrushPicker
-                selectedColor={selectedColor}
-                selectedStroke={strokeWidth}
-                childrenAnimation={sideChildrenAnimation}
-                onChangeStroke={(newStrokeWidth) =>
-                  this.onChangeStroke(newStrokeWidth)
-                }
-              />
+              <>
+                <BrushPicker
+                  selectedColor={selectedColor}
+                  selectedStroke={strokeWidth}
+                  childrenAnimation={sideChildrenAnimation}
+                  onChangeStroke={(newStrokeWidth) =>
+                    this.onChangeStroke(newStrokeWidth)
+                  }
+                  onBrushPickerToggle={({toggle, fromPicker = false}) => {
+                    this.onBrushPickerToggle({toggle, fromPicker});
+                  }}
+                />
+              </>
             </AnimatedComponent>
+            {selectedTool === 'pen' && (
+              <AnimatedComponent
+                index={3}
+                delayValue={0}
+                duration={100}
+                customStyle={localStyles.sideHeaderPoint}
+                childrenAnimation={sidePointAnimation}>
+                <TouchableOpacity
+                  onPress={() =>
+                    this.onBrushPickerToggle({toggle: true, fromPicker: true})
+                  }>
+                  <Icon
+                    size={15}
+                    color={darkCharcoal}
+                    name="caret-forward-outline"
+                  />
+                </TouchableOpacity>
+              </AnimatedComponent>
+            )}
           </View>
         </AnimatedComponent>
       </SafeAreaView>

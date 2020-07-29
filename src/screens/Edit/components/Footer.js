@@ -42,7 +42,7 @@ const Footer = ({
         <AnimatedComponent
           index={1}
           childrenAnimation={penAnimation}
-          duration={200}
+          duration={100}
           delayValue={0}>
           <Pen
             selectedColor={selectedColor}
@@ -53,7 +53,7 @@ const Footer = ({
         <AnimatedComponent
           index={1}
           childrenAnimation={earserAnimation}
-          duration={200}
+          duration={100}
           delayValue={0}>
           <Eraser
             isActive={selectedTool === 'eraser'}

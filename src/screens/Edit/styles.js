@@ -43,6 +43,21 @@ const styles = StyleSheet.create({
     top: hp('100%') / 2.6,
     borderRadius: 5,
   },
+  sideHeaderPoint: {
+    width: 20,
+    height: 50,
+    backgroundColor: white,
+    position: 'absolute',
+    borderColor: lineColor,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderRightWidth: StyleSheet.hairlineWidth,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    top: hp('100%') / 2.6,
+    borderRadius: 2,
+    justifyContent: 'center',
+    transform: [{translateX: -20}],
+    alignItems: 'center',
+  },
 });
 
 export default styles;
