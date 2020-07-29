@@ -63,7 +63,12 @@ class Edit extends Component {
   }
 
   onUserDrawEvent = (evt) => {
-    const {currentPoints, selectedTool} = this.state;
+    const {
+      currentPoints,
+      selectedTool,
+      // previousStrokes,
+      // drawingPen,
+    } = this.state;
     if (selectedTool === 'pen') {
       let x, y, timestamp;
       [x, y, timestamp] = [
@@ -78,6 +83,36 @@ class Edit extends Component {
         currentPoints: newCurrentPoints,
       });
     }
+
+    // if (selectedTool === 'eraser') {
+    //   let x, y, timestamp;
+    //   [x, y, timestamp] = [
+    //     evt.nativeEvent.locationX,
+    //     evt.nativeEvent.locationY,
+    //     evt.nativeEvent.timestamp,
+    //   ];
+    //   let newPoint = new DrawPoint(x, y, timestamp);
+    //   let newCurrentPoints = currentPoints;
+    //   newCurrentPoints.push(newPoint);
+    //   const removePoints = drawingPen.pointsToSvg(newCurrentPoints);
+    //   console.log('removePoints', removePoints);
+    //   previousStrokes.map((item) => {
+    //     if (item.attributes) {
+    //       const {d} = item.attributes;
+    //       const spilittedAttributes = d.split(' ');
+    //       const numericPoints = [];
+    //       spilittedAttributes.map((newItem) => {
+    //         if (newItem.length > 1) {
+    //           numericPoints.push(newItem);
+    //         }
+    //       });
+    //     }
+    //   });
+    //   console.log();
+    //   // this.setState({
+    //   //   currentPoints: newCurrentPoints,
+    //   // });
+    // }
   };
 
   onUserFinishDrawEvent = () => {
@@ -358,15 +393,17 @@ class Edit extends Component {
                     <Svg width="100%" height="100%">
                       <G>
                         {AllStrokes}
-                        <Path
-                          key={previousStrokes.length}
-                          d={drawingPen.pointsToSvg(currentPoints)}
-                          stroke={selectedColor}
-                          strokeWidth={strokeWidth}
-                          fill="none"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
+                        {selectedTool === 'pen' && (
+                          <Path
+                            key={previousStrokes.length}
+                            d={drawingPen.pointsToSvg(currentPoints)}
+                            stroke={selectedColor}
+                            strokeWidth={strokeWidth}
+                            fill="none"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        )}
                       </G>
                     </Svg>
                   </View>
