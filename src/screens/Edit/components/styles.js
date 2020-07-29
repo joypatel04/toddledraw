@@ -51,7 +51,8 @@ const styles = StyleSheet.create({
     color: '#333',
     fontWeight: '500',
     fontSize: 14,
-    marginLeft: 16,
+    marginLeft: 15,
+    fontFamily: 'Heiti SC',
   },
   bottomContainer: {
     flex: 1,

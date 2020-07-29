@@ -34,6 +34,7 @@ const styles = StyleSheet.create({
     color: '#333',
     fontWeight: '500',
     fontSize: 14,
+    fontFamily: 'Heiti SC',
   },
   usedColorsContainer: {
     width: '92%',
@@ -46,7 +47,8 @@ const styles = StyleSheet.create({
   usedColorsText: {
     color: '#333',
     fontWeight: '500',
-    fontSize: 22,
+    fontSize: 20,
+    fontFamily: 'Heiti SC',
   },
   usedColors: {
     marginTop: 10,

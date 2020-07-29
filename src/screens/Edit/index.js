@@ -1,18 +1,26 @@
 import React, {Component} from 'react';
-import {View, PanResponder, ImageBackground, Pressable} from 'react-native';
+import {
+  View,
+  PanResponder,
+  ImageBackground,
+  Pressable,
+  Platform,
+} from 'react-native';
 import idx from 'idx';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import Svg, {Path, G} from 'react-native-svg';
 import ViewShot from 'react-native-view-shot';
 import Icon from 'react-native-vector-icons/dist/Ionicons';
-
 import CameraRoll from '@react-native-community/cameraroll';
+import Toast from 'react-native-simple-toast';
+import Share from 'react-native-share';
 
 import AnimatedComponent from '../../components/AnimatedComponent';
+import ColorPickerModal from '../../components/ColorPickerModal';
+import ThankYouModal from '../../components/ThankYouModal';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import BrushPicker from './components/BrushPicker';
-import ColorPickerModal from '../../components/ColorPickerModal';
 import {getAnimation} from '../../utils/animationUtils';
 import styles from '../../themes/styles';
 import localStyles from './styles';
@@ -28,8 +36,8 @@ class Edit extends Component {
     const {uri: bgImage} = idx(route, (_) => _.params.bgImage) || null;
 
     this.state = {
-      resizeMode: 'cover',
       bgImage,
+      resizeMode: 'cover',
       usedColors: [],
       currentPoints: [],
       previousStrokes: [],
@@ -47,6 +55,8 @@ class Edit extends Component {
       sideAnimation: null,
       sidePointAnimation: null,
       showColorPicker: false,
+      showThankyouModal: false,
+      tempImagePath: null,
     };
 
     this.panResponder = PanResponder.create({
@@ -227,14 +237,18 @@ class Edit extends Component {
   };
 
   onFinishEditing = async () => {
-    this.onBrushPress();
+    const {isActiveBrush} = this.state;
+    if (isActiveBrush) {
+      this.onBrushPress();
+    }
+
     try {
       const res = await this.viewShot.capture();
-      CameraRoll.save(res);
       this.setState({
         headerAnimation: getAnimation('slideUpHeader'),
+        showThankyouModal: true,
+        tempImagePath: res,
       });
-      console.log('res', res);
     } catch (e) {
       console.log(e);
     }
@@ -280,6 +294,31 @@ class Edit extends Component {
     }
   };
 
+  onSharePress = async () => {
+    const {navigation} = this.props;
+    const {tempImagePath} = this.state;
+    try {
+      const shareResponse = await Share.open({
+        url: tempImagePath,
+      });
+      if (shareResponse) {
+        const {app} = shareResponse;
+        if (app === 'com.apple.UIKit.activity.SaveToCameraRoll') {
+          this.setState(
+            {
+              showThankyouModal: false,
+            },
+            () => {
+              navigation.goBack();
+            },
+          );
+        }
+      }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   render() {
     const {route, navigation} = this.props;
     const bgPrimaryColor = idx(route, (_) => _.params.primaryColor) || '#000';
@@ -302,6 +341,8 @@ class Edit extends Component {
       showColorPicker,
       usedColors,
       headerAnimation,
+      showThankyouModal,
+      tempImagePath,
     } = this.state;
 
     const AllStrokes = previousStrokes.map((stroke, index) => {
@@ -327,6 +368,7 @@ class Edit extends Component {
       );
     });
 
+    const imageLocation = Platform.OS === 'ios' ? 'Photos' : 'Gallary';
     const shouldDisabledBackward = previousStrokes.length === 0;
     const shouldDisabledForward = nextStrokes.length === 0;
     const resizeModeStyle = {
@@ -478,6 +520,28 @@ class Edit extends Component {
                 this.setState({
                   selectedColor: color,
                 });
+              }}
+            />
+            <ThankYouModal
+              showThankyouModal={showThankyouModal}
+              onDonePress={() => {
+                this.setState(
+                  {
+                    showThankyouModal: false,
+                  },
+                  () => {
+                    navigation.goBack();
+                  },
+                );
+              }}
+              onSavePress={() => {
+                if (tempImagePath) {
+                  CameraRoll.save(tempImagePath);
+                  Toast.show(`Saved to ${imageLocation}`);
+                }
+              }}
+              onSharePress={() => {
+                this.onSharePress();
               }}
             />
           </View>

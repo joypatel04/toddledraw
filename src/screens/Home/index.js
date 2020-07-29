@@ -33,6 +33,15 @@ const Home = ({navigation}) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      refreshImages();
+    });
+
+    return unsubscribe;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [navigation]);
+
   const getColors = async (uri) => {
     let URI = uri;
     if (Platform.OS === 'ios' && uri.startsWith('ph://')) {
@@ -97,7 +106,7 @@ const Home = ({navigation}) => {
         if (!permissionGiven) {
           const status = await PermissionsAndroid.request(permissionToCheck);
 
-          if (status === 'denied') {
+          if (status === 'granted') {
             setHasPermission(true);
             setPermission(status);
             getPhotos();
@@ -110,12 +119,22 @@ const Home = ({navigation}) => {
     }
   };
 
+  const refreshImages = () => {
+    setImageList([]);
+    setParams(defaultParams);
+    updateHasMore(true);
+    getPhotos();
+  };
+
   const shouldOpenSetting =
     permission === 'never_ask_again' || permission === 'denied';
 
   const onSelectImage = async (item) => {
     const primaryColor = await getColors(item.uri);
-    navigation.navigate('Edit', {bgImage: item, primaryColor});
+    navigation.navigate('Edit', {
+      bgImage: item,
+      primaryColor,
+    });
   };
 
   return (
