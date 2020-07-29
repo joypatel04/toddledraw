@@ -1,30 +1,25 @@
 import React, {Component} from 'react';
-import {
-  View,
-  PanResponder,
-  ImageBackground,
-  Pressable,
-  Text,
-} from 'react-native';
+import {View, PanResponder, ImageBackground, Pressable} from 'react-native';
 import idx from 'idx';
-import isEmpty from 'lodash/isEmpty';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import Svg, {Path, G} from 'react-native-svg';
 import ViewShot from 'react-native-view-shot';
 import Icon from 'react-native-vector-icons/dist/Ionicons';
-import {ColorPicker, fromHsv} from 'react-native-color-picker';
-import Modal from 'react-native-modal';
+
+import CameraRoll from '@react-native-community/cameraroll';
 
 import AnimatedComponent from '../../components/AnimatedComponent';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import BrushPicker from './components/BrushPicker';
+import ColorPickerModal from '../../components/ColorPickerModal';
 import {getAnimation} from '../../utils/animationUtils';
 import styles from '../../themes/styles';
 import localStyles from './styles';
 import DrawingPen from '../../utils/drawingTools/drawingPen';
 import DrawPoint from '../../utils/drawingTools/drawPoint';
-import {darkCharcoal, white, primaryColor} from '../../themes/colors';
+
+import {darkCharcoal, primaryColor} from '../../themes/colors';
 
 class Edit extends Component {
   constructor(props) {
@@ -47,6 +42,7 @@ class Edit extends Component {
       selectedColor: primaryColor,
       strokeWidth: 8,
       isActiveBrush: false,
+      headerAnimation: getAnimation('slideDownHeader'),
       footerAnimation: null,
       sideAnimation: null,
       sidePointAnimation: null,
@@ -63,12 +59,7 @@ class Edit extends Component {
   }
 
   onUserDrawEvent = (evt) => {
-    const {
-      currentPoints,
-      selectedTool,
-      // previousStrokes,
-      // drawingPen,
-    } = this.state;
+    const {currentPoints, selectedTool} = this.state;
     if (selectedTool === 'pen') {
       let x, y, timestamp;
       [x, y, timestamp] = [
@@ -83,36 +74,6 @@ class Edit extends Component {
         currentPoints: newCurrentPoints,
       });
     }
-
-    // if (selectedTool === 'eraser') {
-    //   let x, y, timestamp;
-    //   [x, y, timestamp] = [
-    //     evt.nativeEvent.locationX,
-    //     evt.nativeEvent.locationY,
-    //     evt.nativeEvent.timestamp,
-    //   ];
-    //   let newPoint = new DrawPoint(x, y, timestamp);
-    //   let newCurrentPoints = currentPoints;
-    //   newCurrentPoints.push(newPoint);
-    //   const removePoints = drawingPen.pointsToSvg(newCurrentPoints);
-    //   console.log('removePoints', removePoints);
-    //   previousStrokes.map((item) => {
-    //     if (item.attributes) {
-    //       const {d} = item.attributes;
-    //       const spilittedAttributes = d.split(' ');
-    //       const numericPoints = [];
-    //       spilittedAttributes.map((newItem) => {
-    //         if (newItem.length > 1) {
-    //           numericPoints.push(newItem);
-    //         }
-    //       });
-    //     }
-    //   });
-    //   console.log();
-    //   // this.setState({
-    //   //   currentPoints: newCurrentPoints,
-    //   // });
-    // }
   };
 
   onUserFinishDrawEvent = () => {
@@ -266,8 +227,13 @@ class Edit extends Component {
   };
 
   onFinishEditing = async () => {
+    this.onBrushPress();
     try {
       const res = await this.viewShot.capture();
+      CameraRoll.save(res);
+      this.setState({
+        headerAnimation: getAnimation('slideUpHeader'),
+      });
       console.log('res', res);
     } catch (e) {
       console.log(e);
@@ -335,6 +301,7 @@ class Edit extends Component {
       sidePointAnimation,
       showColorPicker,
       usedColors,
+      headerAnimation,
     } = this.state;
 
     const AllStrokes = previousStrokes.map((stroke, index) => {
@@ -385,8 +352,13 @@ class Edit extends Component {
                 }}>
                 <ImageBackground
                   source={{uri: bgImage}}
-                  style={[localStyles.bgImage]}
-                  imageStyle={resizeModeStyle}>
+                  style={[localStyles.bgImage.primaryColor]}
+                  imageStyle={[
+                    resizeModeStyle,
+                    bgPrimaryColor && {
+                      backgroundColor: bgPrimaryColor,
+                    },
+                  ]}>
                   <View
                     {...this.panResponder.panHandlers}
                     onLayout={this._onLayoutContainer}>
@@ -414,7 +386,7 @@ class Edit extends Component {
               index={2}
               customStyle={localStyles.topHeader}
               animationDelay={1000}
-              childrenAnimation={getAnimation('slideDownHeader')}>
+              childrenAnimation={headerAnimation}>
               <Header
                 resizeMode={resizeMode}
                 isActiveBrush={isActiveBrush}
@@ -494,41 +466,20 @@ class Edit extends Component {
                 />
               </Pressable>
             </AnimatedComponent>
-            <Modal
-              coverScreen
-              style={localStyles.colorPickerModal}
-              animationIn="fadeIn"
-              animationOut="fadeOut"
-              backgroundColor={white}
-              isVisible={showColorPicker}>
-              <SafeAreaView style={localStyles.colorPickerView}>
-                <View style={localStyles.doneContainer}>
-                  <Pressable
-                    style={localStyles.doneButton}
-                    onPress={() => this.setState({showColorPicker: false})}>
-                    <Text>Done</Text>
-                  </Pressable>
-                </View>
-                <ColorPicker
-                  defaultColor={selectedColor}
-                  onColorChange={(color) => {
-                    this.setState({
-                      selectedColor: fromHsv(color),
-                    });
-                  }}
-                  style={localStyles.colorPicker}
-                />
-
-                <View style={localStyles.usedColorsContainer}>
-                  {!isEmpty(usedColors) && (
-                    <Text style={localStyles.usedColorsText}>
-                      Recently used
-                    </Text>
-                  )}
-                  <View style={localStyles.usedColors}>{AllColors}</View>
-                </View>
-              </SafeAreaView>
-            </Modal>
+            <ColorPickerModal
+              showColorPicker={showColorPicker}
+              allColors={AllColors}
+              usedColors={usedColors}
+              selectedColor={selectedColor}
+              onCloseModal={() => {
+                this.setState({showColorPicker: false});
+              }}
+              onColorChange={(color) => {
+                this.setState({
+                  selectedColor: color,
+                });
+              }}
+            />
           </View>
         </AnimatedComponent>
       </SafeAreaView>

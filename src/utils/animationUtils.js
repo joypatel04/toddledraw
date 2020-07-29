@@ -40,6 +40,14 @@ export function getAnimation(animationName) {
         translateY: 0,
       },
     },
+    slideUpHeader: {
+      from: {
+        translateY: 0,
+      },
+      to: {
+        translateY: -40,
+      },
+    },
     slideRight: {
       from: {
         translateX: -45,
