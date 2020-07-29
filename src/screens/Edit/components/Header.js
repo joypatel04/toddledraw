@@ -21,7 +21,7 @@ const Header = ({
   isActiveBrush,
 }) => {
   const resizeIcon =
-    resizeMode === 'slice' ? 'contract-outline' : 'expand-outline';
+    resizeMode === 'contain' ? 'contract-outline' : 'expand-outline';
   const brushIcom = isActiveBrush ? 'brush' : 'brush-outline';
 
   return (

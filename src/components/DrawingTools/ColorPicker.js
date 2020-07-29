@@ -7,7 +7,9 @@ import {darkerGray} from '../../themes/colors';
 import styles from './styles';
 
 const ColorPicker = ({onChangeColor, selectedColor}) => {
-  const onPressColorPicker = () => {};
+  const onPressColorPicker = () => {
+    onChangeColor();
+  };
   const backgroundColor = {
     backgroundColor: selectedColor,
   };

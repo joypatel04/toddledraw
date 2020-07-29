@@ -9,8 +9,6 @@ export default class DrawingPen {
     if (points.length > 0) {
       this.strokes.push(points);
     }
-
-    console.log('this.strokes', this.strokes);
   }
 
   backwardStroke() {
@@ -35,7 +33,6 @@ export default class DrawingPen {
       points.forEach((point) => {
         path = path + ` L ${point.x},${point.y}`;
       });
-      console.log('PATH', path);
       return path;
     } else {
       return '';

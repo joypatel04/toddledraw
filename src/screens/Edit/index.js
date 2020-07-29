@@ -1,10 +1,19 @@
 import React, {Component} from 'react';
-import {View, PanResponder, ImageBackground} from 'react-native';
+import {
+  View,
+  PanResponder,
+  ImageBackground,
+  Pressable,
+  Text,
+} from 'react-native';
 import idx from 'idx';
+import isEmpty from 'lodash/isEmpty';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import Svg, {Path, G} from 'react-native-svg';
 import ViewShot from 'react-native-view-shot';
 import Icon from 'react-native-vector-icons/dist/Ionicons';
+import {ColorPicker, fromHsv} from 'react-native-color-picker';
+import Modal from 'react-native-modal';
 
 import AnimatedComponent from '../../components/AnimatedComponent';
 import Header from './components/Header';
@@ -15,8 +24,7 @@ import styles from '../../themes/styles';
 import localStyles from './styles';
 import DrawingPen from '../../utils/drawingTools/drawingPen';
 import DrawPoint from '../../utils/drawingTools/drawPoint';
-import {darkCharcoal} from '../../themes/colors';
-import {TouchableOpacity} from 'react-native-gesture-handler';
+import {darkCharcoal, white, primaryColor} from '../../themes/colors';
 
 class Edit extends Component {
   constructor(props) {
@@ -27,6 +35,7 @@ class Edit extends Component {
     this.state = {
       resizeMode: 'cover',
       bgImage,
+      usedColors: [],
       currentPoints: [],
       previousStrokes: [],
       nextStrokes: [],
@@ -35,14 +44,13 @@ class Edit extends Component {
       selectedTool: null,
       activeAnimation: null,
       deactiveAnimation: null,
-      selectedColor: 'red',
+      selectedColor: primaryColor,
       strokeWidth: 8,
       isActiveBrush: false,
       footerAnimation: null,
-      footerChildrenAnimation: null,
       sideAnimation: null,
-      sideChildrenAnimation: null,
       sidePointAnimation: null,
+      showColorPicker: false,
     };
 
     this.panResponder = PanResponder.create({
@@ -80,7 +88,14 @@ class Edit extends Component {
       selectedColor,
       selectedTool,
       strokeWidth,
+      usedColors,
     } = this.state;
+
+    let newColor;
+    if (!usedColors.includes(selectedColor)) {
+      newColor = selectedColor;
+    }
+
     if (selectedTool === 'pen') {
       if (currentPoints.length < 1) {
         return;
@@ -107,6 +122,20 @@ class Edit extends Component {
 
       drawingPen.addNewStroke(points);
 
+      if (newColor) {
+        if (usedColors.length >= 12) {
+          const newColors = usedColors;
+          newColors.pop();
+          this.setState({
+            usedColors: [newColor, ...newColors],
+          });
+        } else {
+          this.setState({
+            usedColors: [newColor, ...usedColors],
+          });
+        }
+      }
+
       this.setState({
         previousStrokes: [...previousStrokes, newElement],
         currentPoints: [],
@@ -122,7 +151,6 @@ class Edit extends Component {
   };
 
   _renderSvgElement = (e, tracker) => {
-    console.log('e', e, 'tracker', tracker);
     if (e.type === 'Path') {
       return <Path {...e.attributes} key={tracker} />;
     }
@@ -219,15 +247,12 @@ class Edit extends Component {
       footerAnimation: isActiveBrush
         ? getAnimation('slideDown')
         : getAnimation('slideUp'),
-      footerChildrenAnimation: isActiveBrush
-        ? getAnimation('fadeOut')
-        : getAnimation('fadeIn'),
       sideAnimation: isActiveBrush
         ? getAnimation('slideLeft')
         : getAnimation('slideRight'),
-      siddeChildrenAnimation: isActiveBrush
-        ? getAnimation('fadeOut')
-        : getAnimation('fadeIn'),
+      sidePointAnimation: isActiveBrush
+        ? getAnimation('slideLeft')
+        : getAnimation('slideRight'),
     });
   };
 
@@ -237,34 +262,26 @@ class Edit extends Component {
     });
   };
 
-  onBrushPickerToggle = ({toggle, fromPicker, tool}) => {
-    if (fromPicker) {
+  onBrushPickerToggle = ({toggle, tool}) => {
+    this.setState({
+      sideAnimation: !toggle
+        ? getAnimation('slideLeft')
+        : getAnimation('slideRight'),
+      sidePointAnimation: toggle
+        ? getAnimation('slideLeft')
+        : getAnimation('slideRight'),
+    });
+
+    if (tool === 'eraser') {
       this.setState({
-        sideAnimation: !toggle
-          ? getAnimation('slideLeft')
-          : getAnimation('slideRight'),
-        siddeChildrenAnimation: !toggle
-          ? getAnimation('fadeOut')
-          : getAnimation('fadeIn'),
-        sidePointAnimation: toggle
-          ? getAnimation('slideLeft')
-          : getAnimation('slideRight'),
-      });
-    } else {
-      this.setState({
-        sideAnimation: !toggle
-          ? getAnimation('slideLeft')
-          : getAnimation('slideRight'),
-        siddeChildrenAnimation: !toggle
-          ? getAnimation('fadeOut')
-          : getAnimation('fadeIn'),
+        sidePointAnimation: getAnimation('slideLeft'),
       });
     }
   };
 
   render() {
     const {route, navigation} = this.props;
-    const primaryColor = idx(route, (_) => _.params.primaryColor) || '#000';
+    const bgPrimaryColor = idx(route, (_) => _.params.primaryColor) || '#000';
     const {
       resizeMode,
       bgImage,
@@ -279,14 +296,33 @@ class Edit extends Component {
       strokeWidth,
       isActiveBrush,
       footerAnimation,
-      footerChildrenAnimation,
       sideAnimation,
-      sideChildrenAnimation,
       sidePointAnimation,
+      showColorPicker,
+      usedColors,
     } = this.state;
 
     const AllStrokes = previousStrokes.map((stroke, index) => {
       return this._renderSvgElement(stroke, index);
+    });
+
+    const AllColors = usedColors.map((item) => {
+      const backgroundColor = {
+        backgroundColor: item,
+      };
+      return (
+        <Pressable
+          key={item}
+          onPress={() =>
+            this.setState({
+              showColorPicker: false,
+              selectedColor: item,
+            })
+          }
+          style={[localStyles.usedColorBtn, backgroundColor]}>
+          <View style={[localStyles.usedColorBtn, backgroundColor]} />
+        </Pressable>
+      );
     });
 
     const shouldDisabledBackward = previousStrokes.length === 0;
@@ -300,7 +336,7 @@ class Edit extends Component {
           isWrapper
           customStyle={[
             styles.innerContaier,
-            primaryColor && {backgroundColor: primaryColor},
+            primaryColor && {backgroundColor: bgPrimaryColor},
           ]}
           parentAnimation={getAnimation('fadeIn')}>
           <View style={styles.innerContaier}>
@@ -371,7 +407,6 @@ class Edit extends Component {
               customStyle={localStyles.bottomHeader}
               childrenAnimation={footerAnimation}>
               <Footer
-                childrenAnimation={footerChildrenAnimation}
                 selectedTool={selectedTool}
                 selectedColor={selectedColor}
                 activeAnimation={activeAnimation}
@@ -390,23 +425,27 @@ class Edit extends Component {
                 <BrushPicker
                   selectedColor={selectedColor}
                   selectedStroke={strokeWidth}
-                  childrenAnimation={sideChildrenAnimation}
                   onChangeStroke={(newStrokeWidth) =>
                     this.onChangeStroke(newStrokeWidth)
                   }
-                  onBrushPickerToggle={({toggle, fromPicker = false}) => {
-                    this.onBrushPickerToggle({toggle, fromPicker});
+                  onBrushPickerToggle={({toggle}) => {
+                    this.onBrushPickerToggle({toggle});
+                  }}
+                  onChangeColor={() => {
+                    this.setState({
+                      showColorPicker: true,
+                    });
                   }}
                 />
               </>
             </AnimatedComponent>
             <AnimatedComponent
-              index={3}
+              index={2}
               delayValue={0}
               duration={100}
               customStyle={localStyles.sideHeaderPoint}
               childrenAnimation={sidePointAnimation}>
-              <TouchableOpacity
+              <Pressable
                 style={localStyles.sidePointButton}
                 onPress={() =>
                   this.onBrushPickerToggle({toggle: true, fromPicker: true})
@@ -416,8 +455,43 @@ class Edit extends Component {
                   color={darkCharcoal}
                   name="caret-forward-outline"
                 />
-              </TouchableOpacity>
+              </Pressable>
             </AnimatedComponent>
+            <Modal
+              coverScreen
+              style={localStyles.colorPickerModal}
+              animationIn="fadeIn"
+              animationOut="fadeOut"
+              backgroundColor={white}
+              isVisible={showColorPicker}>
+              <SafeAreaView style={localStyles.colorPickerView}>
+                <View style={localStyles.doneContainer}>
+                  <Pressable
+                    style={localStyles.doneButton}
+                    onPress={() => this.setState({showColorPicker: false})}>
+                    <Text>Done</Text>
+                  </Pressable>
+                </View>
+                <ColorPicker
+                  defaultColor={selectedColor}
+                  onColorChange={(color) => {
+                    this.setState({
+                      selectedColor: fromHsv(color),
+                    });
+                  }}
+                  style={localStyles.colorPicker}
+                />
+
+                <View style={localStyles.usedColorsContainer}>
+                  {!isEmpty(usedColors) && (
+                    <Text style={localStyles.usedColorsText}>
+                      Recently used
+                    </Text>
+                  )}
+                  <View style={localStyles.usedColors}>{AllColors}</View>
+                </View>
+              </SafeAreaView>
+            </Modal>
           </View>
         </AnimatedComponent>
       </SafeAreaView>

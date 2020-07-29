@@ -5,3 +5,4 @@ export const darkCharcoal = '#333333';
 export const lightCharcoal = '#e7e7e7';
 export const greyShadow = 'rgba(189, 189, 189, 0.5)';
 export const darkerGray = 'rgb(162,162,162)';
+export const primaryColor = '#f75961';
