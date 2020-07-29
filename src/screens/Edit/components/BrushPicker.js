@@ -1,6 +1,8 @@
 import React from 'react';
-import {View} from 'react-native';
+import {View, TouchableOpacity} from 'react-native';
 import PropTypes from 'prop-types';
+import Icon from 'react-native-vector-icons/dist/Ionicons';
+import {darkCharcoal} from '../../../themes/colors';
 
 import AnimatedComponent from '../../../components/AnimatedComponent';
 import ColorPicker from '../../../components/DrawingTools/ColorPicker';
@@ -12,7 +14,8 @@ const BrushPicker = ({
   selectedColor,
   selectedStroke,
   onChangeColor,
-  onChangeStoke,
+  onChangeStroke,
+  onPressMore,
 }) => {
   return (
     <AnimatedComponent
@@ -27,14 +30,29 @@ const BrushPicker = ({
         <StrokePicker
           selectedStroke={selectedStroke}
           selectedColor={selectedColor}
-          onChangeStoke={onChangeStoke}
+          onChangeStroke={onChangeStroke}
         />
+        <TouchableOpacity onPress={onPressMore} style={localStyles.moreButton}>
+          <Icon
+            style={localStyles.moreIcon}
+            size={20}
+            color={darkCharcoal}
+            name="apps-outline"
+          />
+        </TouchableOpacity>
       </View>
     </AnimatedComponent>
   );
 };
 
-BrushPicker.propTypes = {};
+BrushPicker.propTypes = {
+  childrenAnimation: PropTypes.any,
+  selectedColor: PropTypes.string,
+  selectedStroke: PropTypes.number,
+  onChangeColor: PropTypes.func,
+  onChangeStroke: PropTypes.func,
+  onPressMore: PropTypes.func,
+};
 
 BrushPicker.defaultProps = {};
 

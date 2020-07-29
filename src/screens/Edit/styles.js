@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: StyleSheet.hairlineWidth,
     zIndex: 1,
     transform: [{translateX: -45}],
-    top: hp('100%') / 2.5,
+    top: hp('100%') / 2.6,
     borderRadius: 5,
   },
 });

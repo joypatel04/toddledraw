@@ -1,15 +1,35 @@
-import React from 'react';
-import {View, TouchableOpacity} from 'react-native';
+import React, {useState} from 'react';
+import {View, Pressable} from 'react-native';
 import PropTypes from 'prop-types';
 
 import styles from './styles';
 
-const StrokePicker = ({onChangeStoke, selectedStroke, selectedColor}) => {
-  const onPressColorPicker = () => {};
+const maxStrokeWidth = 20;
+const minStrokeWidth = 3;
+
+const StrokePicker = ({onChangeStroke, selectedStroke, selectedColor}) => {
+  const [strokeValue, setStrokeValue] = useState(selectedStroke);
+  const [strokeStep, setStrokeStep] = useState('increment');
+
+  const onPressStrock = () => {
+    if (strokeValue + 1 >= maxStrokeWidth) {
+      setStrokeStep('decrement');
+    } else if (strokeValue - 1 <= minStrokeWidth) {
+      setStrokeStep('increment');
+    }
+    if (strokeValue < maxStrokeWidth && strokeStep === 'increment') {
+      setStrokeValue(strokeValue + 1);
+      onChangeStroke(strokeValue + 1);
+    } else {
+      setStrokeValue(strokeValue - 1);
+      onChangeStroke(strokeValue - 1);
+    }
+  };
+
   const strokeSize = {
-    width: selectedStroke,
-    height: selectedStroke,
-    borderRadius: selectedStroke / 2,
+    width: strokeValue,
+    height: strokeValue,
+    borderRadius: strokeValue / 2,
     backgroundColor: selectedColor,
   };
   const borderColor = {
@@ -18,26 +38,25 @@ const StrokePicker = ({onChangeStoke, selectedStroke, selectedColor}) => {
   };
   return (
     <>
-      <TouchableOpacity
-        style={[styles.strokePickerButton]}
-        onPress={onPressColorPicker}>
+      <Pressable style={[styles.strokePickerButton]} onPress={onPressStrock}>
         <View style={[styles.strokeButtonView]}>
           <View style={[styles.strokePicker, borderColor]}>
             <View style={[strokeSize]} />
           </View>
         </View>
-      </TouchableOpacity>
+      </Pressable>
     </>
   );
 };
 
 StrokePicker.propTypes = {
   selectedColor: PropTypes.string,
-  onChangeColor: PropTypes.func,
+  onChangeStroke: PropTypes.func,
 };
 
 StrokePicker.defaultProps = {
-  onChangeColor: () => {},
+  onLongPress: () => {},
+  onChangeStroke: () => {},
 };
 
 export default StrokePicker;

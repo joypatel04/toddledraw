@@ -1,8 +1,8 @@
 import React, {Component} from 'react';
-import {View, PanResponder} from 'react-native';
+import {View, PanResponder, ImageBackground} from 'react-native';
 import idx from 'idx';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import Svg, {Path, Image, G} from 'react-native-svg';
+import Svg, {Path, G} from 'react-native-svg';
 import ViewShot from 'react-native-view-shot';
 
 import AnimatedComponent from '../../components/AnimatedComponent';
@@ -22,7 +22,7 @@ class Edit extends Component {
     const {uri: bgImage} = idx(route, (_) => _.params.bgImage) || null;
 
     this.state = {
-      resizeMode: 'slice',
+      resizeMode: 'cover',
       bgImage,
       currentPoints: [],
       previousStrokes: [],
@@ -33,7 +33,7 @@ class Edit extends Component {
       activeAnimation: null,
       deactiveAnimation: null,
       selectedColor: 'red',
-      strokeWidth: 5,
+      strokeWidth: 8,
       isActiveBrush: false,
       footerAnimation: null,
       footerChildrenAnimation: null,
@@ -51,7 +51,7 @@ class Edit extends Component {
   }
 
   onUserDrawEvent = (evt) => {
-    const {previousStrokes, currentPoints, selectedTool} = this.state;
+    const {currentPoints, selectedTool} = this.state;
     if (selectedTool === 'pen') {
       let x, y, timestamp;
       [x, y, timestamp] = [
@@ -63,7 +63,6 @@ class Edit extends Component {
       let newCurrentPoints = currentPoints;
       newCurrentPoints.push(newPoint);
       this.setState({
-        previousStrokes: previousStrokes,
         currentPoints: newCurrentPoints,
       });
     }
@@ -119,6 +118,7 @@ class Edit extends Component {
   };
 
   _renderSvgElement = (e, tracker) => {
+    console.log('e', e, 'tracker', tracker);
     if (e.type === 'Path') {
       return <Path {...e.attributes} key={tracker} />;
     }
@@ -221,6 +221,12 @@ class Edit extends Component {
     });
   };
 
+  onChangeStroke = (strokeWidth) => {
+    this.setState({
+      strokeWidth,
+    });
+  };
+
   render() {
     const {route, navigation} = this.props;
     const primaryColor = idx(route, (_) => _.params.primaryColor) || '#000';
@@ -249,7 +255,9 @@ class Edit extends Component {
 
     const shouldDisabledBackward = previousStrokes.length === 0;
     const shouldDisabledForward = nextStrokes.length === 0;
-
+    const resizeModeStyle = {
+      resizeMode,
+    };
     return (
       <SafeAreaView style={[styles.container]}>
         <AnimatedComponent
@@ -268,34 +276,29 @@ class Edit extends Component {
                 ref={(c) => {
                   this.viewShot = c;
                 }}>
-                <View
-                  {...this.panResponder.panHandlers}
-                  onLayout={this._onLayoutContainer}>
-                  <Svg width="100%" height="100%">
-                    <Image
-                      x="0%"
-                      y="0%"
-                      width="100%"
-                      height="100%"
-                      preserveAspectRatio={`xMidYMid ${resizeMode}`}
-                      opacity="1"
-                      href={{uri: bgImage}}
-                      clipPath="url(#clip)"
-                    />
-                    <G>
-                      {AllStrokes}
-                      <Path
-                        key={previousStrokes.length}
-                        d={drawingPen.pointsToSvg(currentPoints)}
-                        stroke={selectedColor}
-                        strokeWidth={strokeWidth}
-                        fill="none"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </G>
-                  </Svg>
-                </View>
+                <ImageBackground
+                  source={{uri: bgImage}}
+                  style={[localStyles.bgImage]}
+                  imageStyle={resizeModeStyle}>
+                  <View
+                    {...this.panResponder.panHandlers}
+                    onLayout={this._onLayoutContainer}>
+                    <Svg width="100%" height="100%">
+                      <G>
+                        {AllStrokes}
+                        <Path
+                          key={previousStrokes.length}
+                          d={drawingPen.pointsToSvg(currentPoints)}
+                          stroke={selectedColor}
+                          strokeWidth={strokeWidth}
+                          fill="none"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </G>
+                    </Svg>
+                  </View>
+                </ImageBackground>
               </ViewShot>
             </AnimatedComponent>
             <AnimatedComponent
@@ -314,10 +317,10 @@ class Edit extends Component {
                   navigation.goBack();
                 }}
                 onFitToScreenPress={() => {
-                  if (resizeMode === 'slice') {
-                    this.setState({resizeMode: 'meet'});
+                  if (resizeMode === 'contain') {
+                    this.setState({resizeMode: 'cover'});
                   } else {
-                    this.setState({resizeMode: 'slice'});
+                    this.setState({resizeMode: 'contain'});
                   }
                 }}
                 onDonePress={() => this.onFinishEditing()}
@@ -328,7 +331,7 @@ class Edit extends Component {
             <AnimatedComponent
               index={2}
               delayValue={0}
-              duration={200}
+              duration={100}
               customStyle={localStyles.bottomHeader}
               childrenAnimation={footerAnimation}>
               <Footer
@@ -344,13 +347,16 @@ class Edit extends Component {
             <AnimatedComponent
               index={2}
               delayValue={0}
-              duration={200}
+              duration={100}
               customStyle={localStyles.sideHeader}
               childrenAnimation={sideAnimation}>
               <BrushPicker
                 selectedColor={selectedColor}
                 selectedStroke={strokeWidth}
                 childrenAnimation={sideChildrenAnimation}
+                onChangeStroke={(newStrokeWidth) =>
+                  this.onChangeStroke(newStrokeWidth)
+                }
               />
             </AnimatedComponent>
           </View>

@@ -90,7 +90,10 @@ const styles = StyleSheet.create({
   },
   strokePicker: {
     ...resuableStyles.picker,
-    borderWidth: 3,
+    width: 22,
+    height: 22,
+    borderRadius: 22 / 2,
+    borderWidth: 2,
     justifyContent: 'center',
     alignItems: 'center',
   },

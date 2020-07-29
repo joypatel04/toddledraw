@@ -67,6 +67,16 @@ const styles = StyleSheet.create({
     paddingLeft: 5,
     paddingVertical: 8,
   },
+  moreButton: {
+    marginTop: 8,
+    width: 35,
+    height: 35,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  moreIcon: {
+    left: -6,
+  },
 });
 
 export default styles;
