@@ -400,25 +400,24 @@ class Edit extends Component {
                 />
               </>
             </AnimatedComponent>
-            {selectedTool === 'pen' && (
-              <AnimatedComponent
-                index={3}
-                delayValue={0}
-                duration={100}
-                customStyle={localStyles.sideHeaderPoint}
-                childrenAnimation={sidePointAnimation}>
-                <TouchableOpacity
-                  onPress={() =>
-                    this.onBrushPickerToggle({toggle: true, fromPicker: true})
-                  }>
-                  <Icon
-                    size={15}
-                    color={darkCharcoal}
-                    name="caret-forward-outline"
-                  />
-                </TouchableOpacity>
-              </AnimatedComponent>
-            )}
+            <AnimatedComponent
+              index={3}
+              delayValue={0}
+              duration={100}
+              customStyle={localStyles.sideHeaderPoint}
+              childrenAnimation={sidePointAnimation}>
+              <TouchableOpacity
+                style={localStyles.sidePointButton}
+                onPress={() =>
+                  this.onBrushPickerToggle({toggle: true, fromPicker: true})
+                }>
+                <Icon
+                  size={15}
+                  color={darkCharcoal}
+                  name="caret-forward-outline"
+                />
+              </TouchableOpacity>
+            </AnimatedComponent>
           </View>
         </AnimatedComponent>
       </SafeAreaView>
