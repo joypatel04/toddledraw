@@ -1,4 +1,5 @@
 import {StyleSheet} from 'react-native';
+import {heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import {white, lineColor} from '../../themes/colors';
 
 const styles = StyleSheet.create({
@@ -13,7 +14,7 @@ const styles = StyleSheet.create({
     top: 0,
   },
   bottomHeader: {
-    height: 45,
+    height: 50,
     backgroundColor: white,
     width: '100%',
     position: 'absolute',
@@ -21,11 +22,26 @@ const styles = StyleSheet.create({
     borderTopWidth: StyleSheet.hairlineWidth,
     zIndex: 1,
     bottom: 0,
+    transform: [{translateY: 50}],
   },
   bgImage: {
     flexGrow: 1,
     width: '100%',
     height: '100%',
+  },
+  sideHeader: {
+    width: 45,
+    height: 'auto',
+    backgroundColor: white,
+    position: 'absolute',
+    borderColor: lineColor,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderRightWidth: StyleSheet.hairlineWidth,
+    borderBottomWidth: StyleSheet.hairlineWidth,
+    zIndex: 1,
+    transform: [{translateX: -45}],
+    top: hp('100%') / 2.5,
+    borderRadius: 5,
   },
 });
 

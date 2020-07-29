@@ -18,6 +18,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     alignItems: 'center',
   },
+  innerContainer: {
+    width: '100%',
+    height: '100%',
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   leftContainer: {
     flex: 0.5,
     justifyContent: 'flex-start',
@@ -46,6 +52,20 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     fontSize: 14,
     marginLeft: 16,
+  },
+  bottomContainer: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  sideContainer: {
+    justifyContent: 'space-around',
+    flexDirection: 'column',
+    paddingLeft: 5,
+    paddingVertical: 8,
   },
 });
 

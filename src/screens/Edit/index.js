@@ -3,9 +3,12 @@ import {View, PanResponder} from 'react-native';
 import idx from 'idx';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import Svg, {Path, Image, G} from 'react-native-svg';
+import ViewShot from 'react-native-view-shot';
 
 import AnimatedComponent from '../../components/AnimatedComponent';
-import TopHeader from './components/TopHeader';
+import Header from './components/Header';
+import Footer from './components/Footer';
+import BrushPicker from './components/BrushPicker';
 import {getAnimation} from '../../utils/animationUtils';
 import styles from '../../themes/styles';
 import localStyles from './styles';
@@ -26,10 +29,19 @@ class Edit extends Component {
       nextStrokes: [],
       newStroke: [],
       drawingPen: new DrawingPen(),
+      selectedTool: null,
+      activeAnimation: null,
+      deactiveAnimation: null,
+      selectedColor: 'red',
+      strokeWidth: 5,
+      isActiveBrush: false,
+      footerAnimation: null,
+      footerChildrenAnimation: null,
+      sideAnimation: null,
+      sideChildrenAnimation: null,
     };
 
     this.panResponder = PanResponder.create({
-      // Ask to be the responder:
       onStartShouldSetPanResponder: (evt, gestureState) => true,
       onMoveShouldSetPanResponder: (evt, gestureState) => true,
       onPanResponderGrant: (evt) => this.onUserDrawEvent(evt),
@@ -39,54 +51,65 @@ class Edit extends Component {
   }
 
   onUserDrawEvent = (evt) => {
-    const {previousStrokes, currentPoints} = this.state;
-    let x, y, timestamp;
-    [x, y, timestamp] = [
-      evt.nativeEvent.locationX,
-      evt.nativeEvent.locationY,
-      evt.nativeEvent.timestamp,
-    ];
-    let newPoint = new DrawPoint(x, y, timestamp);
-    let newCurrentPoints = currentPoints;
-    newCurrentPoints.push(newPoint);
-    this.setState({
-      previousStrokes: previousStrokes,
-      currentPoints: newCurrentPoints,
-    });
+    const {previousStrokes, currentPoints, selectedTool} = this.state;
+    if (selectedTool === 'pen') {
+      let x, y, timestamp;
+      [x, y, timestamp] = [
+        evt.nativeEvent.locationX,
+        evt.nativeEvent.locationY,
+        evt.nativeEvent.timestamp,
+      ];
+      let newPoint = new DrawPoint(x, y, timestamp);
+      let newCurrentPoints = currentPoints;
+      newCurrentPoints.push(newPoint);
+      this.setState({
+        previousStrokes: previousStrokes,
+        currentPoints: newCurrentPoints,
+      });
+    }
   };
 
   onUserFinishDrawEvent = () => {
-    const {drawingPen, previousStrokes, currentPoints} = this.state;
-    if (currentPoints.length < 1) {
-      return;
+    const {
+      drawingPen,
+      previousStrokes,
+      currentPoints,
+      selectedColor,
+      selectedTool,
+      strokeWidth,
+    } = this.state;
+    if (selectedTool === 'pen') {
+      if (currentPoints.length < 1) {
+        return;
+      }
+
+      let points = currentPoints;
+      if (points.length === 1) {
+        let p = points[0];
+        let distance = Math.sqrt(4) / 2;
+        points.push(new DrawPoint(p.x + distance, p.y + distance, p.time));
+      }
+
+      let newElement = {
+        type: 'Path',
+        attributes: {
+          d: drawingPen.pointsToSvg(points),
+          stroke: selectedColor,
+          fill: 'none',
+          strokeLinecap: 'round',
+          strokeLinejoin: 'round',
+          strokeWidth,
+        },
+      };
+
+      drawingPen.addNewStroke(points);
+
+      this.setState({
+        previousStrokes: [...previousStrokes, newElement],
+        currentPoints: [],
+        nextStrokes: [],
+      });
     }
-
-    let points = currentPoints;
-    if (points.length === 1) {
-      let p = points[0];
-      let distance = Math.sqrt(4) / 2;
-      points.push(new DrawPoint(p.x + distance, p.y + distance, p.time));
-    }
-
-    let newElement = {
-      type: 'Path',
-      attributes: {
-        d: drawingPen.pointsToSvg(points),
-        stroke: '#000000',
-        strokeWidth: 4,
-        fill: 'none',
-        strokeLinecap: 'round',
-        strokeLinejoin: 'round',
-      },
-    };
-
-    drawingPen.addNewStroke(points);
-
-    this.setState({
-      previousStrokes: [...previousStrokes, newElement],
-      currentPoints: [],
-      nextStrokes: [],
-    });
   };
 
   _onLayoutContainer = (e) => {
@@ -137,17 +160,9 @@ class Edit extends Component {
     }
 
     let newPreviousStrokes = [];
-    console.log('nextStrokes', JSON.stringify(nextStrokes));
     let strokes = nextStrokes;
-    if (nextStrokes.length > 1) {
-      newPreviousStrokes = [...previousStrokes, strokes[0]];
-    } else {
-      newPreviousStrokes = [...previousStrokes, strokes[0]];
-    }
-
+    newPreviousStrokes = [...previousStrokes, strokes[0]];
     strokes.shift();
-
-    console.log('strokes', strokes);
 
     drawingPen.addNewStroke(strokes);
 
@@ -158,9 +173,57 @@ class Edit extends Component {
     });
   };
 
+  onPressTool = (tool) => {
+    const {selectedTool} = this.state;
+    if (!selectedTool) {
+      this.setState({
+        selectedTool: tool,
+        activeAnimation: getAnimation('slideUpTool'),
+      });
+      return;
+    }
+
+    if (selectedTool) {
+      this.setState({
+        selectedTool: tool,
+        activeAnimation: getAnimation('slideUpTool'),
+        deactiveAnimation: getAnimation('slideDownTool'),
+      });
+    }
+  };
+
+  onFinishEditing = async () => {
+    try {
+      const res = await this.viewShot.capture();
+      console.log('res', res);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  onBrushPress = () => {
+    const {isActiveBrush} = this.state;
+    this.setState({
+      selectedTool: null,
+      isActiveBrush: !isActiveBrush,
+      footerAnimation: isActiveBrush
+        ? getAnimation('slideDown')
+        : getAnimation('slideUp'),
+      footerChildrenAnimation: isActiveBrush
+        ? getAnimation('fadeOut')
+        : getAnimation('fadeIn'),
+      sideAnimation: isActiveBrush
+        ? getAnimation('slideLeft')
+        : getAnimation('slideRight'),
+      siddeChildrenAnimation: isActiveBrush
+        ? getAnimation('fadeOut')
+        : getAnimation('fadeIn'),
+    });
+  };
+
   render() {
     const {route, navigation} = this.props;
-    const primaryColor = idx(route, (_) => _.params.primaryColor) || '#fff';
+    const primaryColor = idx(route, (_) => _.params.primaryColor) || '#000';
     const {
       resizeMode,
       bgImage,
@@ -168,6 +231,16 @@ class Edit extends Component {
       drawingPen,
       currentPoints,
       nextStrokes,
+      selectedColor,
+      selectedTool,
+      activeAnimation,
+      deactiveAnimation,
+      strokeWidth,
+      isActiveBrush,
+      footerAnimation,
+      footerChildrenAnimation,
+      sideAnimation,
+      sideChildrenAnimation,
     } = this.state;
 
     const AllStrokes = previousStrokes.map((stroke, index) => {
@@ -178,11 +251,7 @@ class Edit extends Component {
     const shouldDisabledForward = nextStrokes.length === 0;
 
     return (
-      <SafeAreaView
-        style={[
-          styles.container,
-          primaryColor && {backgroundColor: primaryColor},
-        ]}>
+      <SafeAreaView style={[styles.container]}>
         <AnimatedComponent
           isWrapper
           customStyle={[
@@ -192,11 +261,51 @@ class Edit extends Component {
           parentAnimation={getAnimation('fadeIn')}>
           <View style={styles.innerContaier}>
             <AnimatedComponent
+              customStyle={localStyles.bgImage}
+              index={1}
+              childrenAnimation={getAnimation('fadeIn')}>
+              <ViewShot
+                ref={(c) => {
+                  this.viewShot = c;
+                }}>
+                <View
+                  {...this.panResponder.panHandlers}
+                  onLayout={this._onLayoutContainer}>
+                  <Svg width="100%" height="100%">
+                    <Image
+                      x="0%"
+                      y="0%"
+                      width="100%"
+                      height="100%"
+                      preserveAspectRatio={`xMidYMid ${resizeMode}`}
+                      opacity="1"
+                      href={{uri: bgImage}}
+                      clipPath="url(#clip)"
+                    />
+                    <G>
+                      {AllStrokes}
+                      <Path
+                        key={previousStrokes.length}
+                        d={drawingPen.pointsToSvg(currentPoints)}
+                        stroke={selectedColor}
+                        strokeWidth={strokeWidth}
+                        fill="none"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </G>
+                  </Svg>
+                </View>
+              </ViewShot>
+            </AnimatedComponent>
+            <AnimatedComponent
               index={2}
               customStyle={localStyles.topHeader}
-              childrenAnimation={getAnimation('slideDownWithFadeIn')}>
-              <TopHeader
+              animationDelay={1000}
+              childrenAnimation={getAnimation('slideDownHeader')}>
+              <Header
                 resizeMode={resizeMode}
+                isActiveBrush={isActiveBrush}
                 onBackwardPress={() => this.onBackwardPress()}
                 onForwardPress={() => this.onForwardPress()}
                 shouldDisabledBackward={shouldDisabledBackward}
@@ -208,54 +317,42 @@ class Edit extends Component {
                   if (resizeMode === 'slice') {
                     this.setState({resizeMode: 'meet'});
                   } else {
-                    this.setState({resizeMode: ' slice'});
+                    this.setState({resizeMode: 'slice'});
                   }
                 }}
+                onDonePress={() => this.onFinishEditing()}
+                onBrushPress={() => this.onBrushPress()}
+                childrenAnimation={getAnimation('fadeIn')}
               />
             </AnimatedComponent>
             <AnimatedComponent
-              customStyle={localStyles.bgImage}
-              index={1}
-              childrenAnimation={getAnimation('fadeIn')}>
-              <View
-                {...this.panResponder.panHandlers}
-                onLayout={this._onLayoutContainer}>
-                <Svg
-                  width="100%"
-                  height="100%"
-                  fill="blue"
-                  stroke="red"
-                  color="green">
-                  <Image
-                    x="0%"
-                    y="0%"
-                    width="100%"
-                    height="100%"
-                    preserveAspectRatio={`xMidYMid ${resizeMode}`}
-                    opacity="1"
-                    href={{uri: bgImage}}
-                    clipPath="url(#clip)"
-                  />
-                  <G>
-                    {AllStrokes}
-                    <Path
-                      key={previousStrokes.length}
-                      d={drawingPen.pointsToSvg(currentPoints)}
-                      stroke={'#000000'}
-                      strokeWidth={4}
-                      fill="none"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </G>
-                </Svg>
-              </View>
+              index={2}
+              delayValue={0}
+              duration={200}
+              customStyle={localStyles.bottomHeader}
+              childrenAnimation={footerAnimation}>
+              <Footer
+                childrenAnimation={footerChildrenAnimation}
+                selectedTool={selectedTool}
+                selectedColor={selectedColor}
+                activeAnimation={activeAnimation}
+                deactiveAnimation={deactiveAnimation}
+                onPressPen={() => this.onPressTool('pen')}
+                onPressEraser={() => this.onPressTool('eraser')}
+              />
             </AnimatedComponent>
             <AnimatedComponent
-              index={3}
-              customStyle={localStyles.bottomHeader}
-              childrenAnimation={getAnimation('slideUpWithFadeIn')}
-            />
+              index={2}
+              delayValue={0}
+              duration={200}
+              customStyle={localStyles.sideHeader}
+              childrenAnimation={sideAnimation}>
+              <BrushPicker
+                selectedColor={selectedColor}
+                selectedStroke={strokeWidth}
+                childrenAnimation={sideChildrenAnimation}
+              />
+            </AnimatedComponent>
           </View>
         </AnimatedComponent>
       </SafeAreaView>

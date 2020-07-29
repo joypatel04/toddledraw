@@ -1,71 +1,51 @@
 export function getAnimation(animationName) {
   const animationData = {
-    slideUpWithFadeIn: {
+    slideUp: {
       from: {
-        translateY: 30,
-        opacity: 1,
+        translateY: 50,
       },
       to: {
         translateY: 0,
-        opacity: 1,
       },
     },
-    slideDownWithFadeIn: {
+    slideDown: {
       from: {
-        translateY: -30,
-        opacity: 1,
+        translateY: 0,
       },
       to: {
-        translateY: 0,
-        opacity: 1,
+        translateY: 50,
       },
     },
-    slideUpWithFadeOut: {
+    slideUpTool: {
       from: {
         translateY: 0,
-        opacity: 1,
       },
       to: {
         translateY: -30,
-        opacity: 0,
       },
     },
-    slideDownWithFadeOut: {
+    slideDownTool: {
       from: {
+        translateY: -30,
+      },
+      to: {
         translateY: 0,
-        opacity: 1,
-      },
-      to: {
-        translateY: 30,
-        opacity: 0,
       },
     },
-    slideRightWithFadeIn: {
+    slideDownHeader: {
       from: {
-        translateX: -40,
+        translateY: -40,
+      },
+      to: {
+        translateY: 0,
+      },
+    },
+    slideRight: {
+      from: {
+        translateX: -45,
       },
       to: {
         translateX: 0,
-      },
-    },
-    slideLeftWithFadeOut: {
-      from: {
-        translateX: 0,
-        opacity: 1,
-      },
-      to: {
-        translateX: -100,
-        opacity: 0,
-      },
-    },
-    slideRightWithFadeOut: {
-      from: {
-        translateX: 0,
-        opacity: 1,
-      },
-      to: {
-        translateX: 100,
-        opacity: 0,
       },
     },
     slideLeft: {
@@ -73,27 +53,7 @@ export function getAnimation(animationName) {
         translateX: 0,
       },
       to: {
-        translateX: -400,
-      },
-    },
-    slideRight: {
-      from: {
-        translateX: 0,
-      },
-      to: {
-        translateX: 400,
-      },
-    },
-    sampleAnimation: {
-      from: {
-        rotate: '-30deg',
-        scale: 0.6,
-        opacity: 0,
-      },
-      to: {
-        rotate: '0deg',
-        scale: 1,
-        opacity: 1,
+        translateX: -45,
       },
     },
     fadeIn: {
@@ -104,14 +64,12 @@ export function getAnimation(animationName) {
         opacity: 1,
       },
     },
-    zoomInWithFadeIn: {
+    fadeOut: {
       from: {
-        scale: 0.2,
-        opacity: 0,
+        opacity: 1,
       },
       to: {
-        scale: 1,
-        opacity: 1,
+        opacity: 0,
       },
     },
   };

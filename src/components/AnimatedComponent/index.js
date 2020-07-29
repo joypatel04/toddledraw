@@ -9,9 +9,11 @@ const AnimatedComponent = ({
   childrenAnimation,
   children,
   customStyle,
+  duration,
+  delayValue,
 }) => {
-  const animationDuration = isWrapper ? 400 : 500;
-  const animationDelay = isWrapper ? 100 : 500 * (index / 2);
+  const animationDuration = duration || isWrapper ? 400 : 500;
+  const animationDelay = delayValue || isWrapper ? 100 : 500 * (index / 1.2);
   const animation = isWrapper ? parentAnimation : childrenAnimation;
 
   return (
@@ -34,6 +36,8 @@ AnimatedComponent.propTypes = {
   parentAnimation: PropTypes.object,
   childrenAnimation: PropTypes.object,
   customStyle: PropTypes.any,
+  duration: PropTypes.number,
+  delayValue: PropTypes.number,
 };
 AnimatedComponent.defaultProps = {
   children: null,

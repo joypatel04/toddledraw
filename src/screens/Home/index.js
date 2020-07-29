@@ -34,8 +34,14 @@ const Home = ({navigation}) => {
   }, []);
 
   const getColors = async (uri) => {
+    let URI = uri;
+    if (Platform.OS === 'ios' && uri.startsWith('ph://')) {
+      const regex = /:\/\/(.{36})\//i;
+      const result = uri.match(regex);
+      URI = `assets-library://asset/asset.jpg?id=${result[1]}&ext=jpg`;
+    }
     try {
-      const colors = await ImageColors.getColors(uri, {
+      const colors = await ImageColors.getColors(URI, {
         fallback: '#fff',
       });
       return Platform.OS === 'ios' ? colors.background : colors.lightMuted;
