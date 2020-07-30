@@ -24,7 +24,7 @@ npx react-native run-android
 
 ### Android
 
-![Alt text](https://github.com/joypatel04/toddledraw/blob/master/android/app/release/app-release.apk 'APK FIle')
+[APK FILE](https://github.com/joypatel04/toddledraw/blob/master/android/app/release/app-release.apk)
 
 ### Screenshots
 
