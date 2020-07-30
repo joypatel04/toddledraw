@@ -1,12 +1,13 @@
 import React from 'react';
 import {View, Pressable, Text} from 'react-native';
-import {ColorPicker, fromHsv} from 'react-native-color-picker';
 import Modal from 'react-native-modal';
 import isEmpty from 'lodash/isEmpty';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import PropTypes from 'prop-types';
 
+import ColorPicker from '../ColorPicker';
 import {white} from '../../themes/colors';
+import {getColorShadeFromHslToHex} from '../../utils/colorUtils';
 import localStyles from './styles';
 
 const ColorPickerModal = ({
@@ -60,9 +61,8 @@ const ColorPickerModal = ({
         <ColorPicker
           defaultColor={selectedColor}
           onColorChange={(color) => {
-            onColorChange(fromHsv(color));
+            onColorChange(getColorShadeFromHslToHex(color));
           }}
-          style={localStyles.colorPicker}
         />
         <View style={localStyles.usedColorsContainer}>
           {!isEmpty(usedColors) && (
