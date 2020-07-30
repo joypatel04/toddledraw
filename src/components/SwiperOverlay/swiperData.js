@@ -14,12 +14,12 @@ export const swiperData = [
   {
     id: 0,
     overlayColor: 'transparent',
-    name: '',
+    name: null,
   },
   {
     id: 1,
     overlayColor: orangeOvelay,
-    name: 'Tokyo',
+    name: '東京',
   },
   {
     id: 2,
@@ -34,7 +34,7 @@ export const swiperData = [
   {
     id: 4,
     overlayColor: megentaRoseOverlay,
-    name: 'The Professor',
+    name: 'El profesor',
   },
   {
     id: 5,
@@ -44,7 +44,7 @@ export const swiperData = [
   {
     id: 6,
     overlayColor: redOverlay,
-    name: 'Moscow',
+    name: 'Москва',
   },
   {
     id: 7,
@@ -54,7 +54,7 @@ export const swiperData = [
   {
     id: 8,
     overlayColor: orangeRedOverlay,
-    name: 'Lisbon',
+    name: 'Lisboa',
   },
   {
     id: 9,

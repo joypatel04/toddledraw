@@ -1,6 +1,7 @@
 import {StyleSheet} from 'react-native';
 import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import {white} from '../../themes/colors';
+import {primaryFont} from '../../themes/fonts';
 
 const styles = StyleSheet.create({
   container: {
@@ -22,7 +23,7 @@ const styles = StyleSheet.create({
   textInput: {
     color: 'black',
     fontWeight: 'bold',
-    fontFamily: 'Heiti SC',
+    fontFamily: primaryFont,
     textAlign: 'left',
     width: '100%',
     height: 'auto',

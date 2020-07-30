@@ -1,12 +1,13 @@
 import React, {useEffect, useState} from 'react';
 import {
   FlatList,
-  Button,
+  Pressable,
   PermissionsAndroid,
   Platform,
   Linking,
   View,
   Image,
+  Text,
 } from 'react-native';
 import idx from 'idx';
 import CameraRoll from '@react-native-community/cameraroll';
@@ -85,6 +86,7 @@ const Home = ({navigation}) => {
       const updatedImageList = imageList.concat(images);
       setImageList(updatedImageList);
     } catch (e) {
+      console.log(e.code);
       if (e.code === 'E_PHOTO_LIBRARY_AUTH_DENIED') {
         setHasPermission(false);
         setPermission('denied');
@@ -142,6 +144,10 @@ const Home = ({navigation}) => {
     });
   };
 
+  const showPermissionButton = permission === 'denied' || shouldOpenSetting;
+
+  const mediaFolderText = Platform.OS === 'ios' ? 'Photos' : 'Gallary';
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={[localStyles.innerTopContainer]}>
@@ -150,16 +156,21 @@ const Home = ({navigation}) => {
         </View>
         {/* <View style={localStyles.overlay} /> */}
       </View>
-      {permission === 'denied' ||
-        (shouldOpenSetting && (
-          <Button
-            title="Go to Setting"
+      {showPermissionButton && (
+        <View style={localStyles.innerBottomPermissionContainer}>
+          <Text style={localStyles.contentSubText}>
+            {`Doodle Space" requires access to your ${mediaFolderText}to create your first Doodle`}
+          </Text>
+          <Pressable
             onPress={() => Linking.openSettings()}
-          />
-        ))}
+            style={localStyles.button}>
+            <Text style={localStyles.buttonText}>Go to Setting</Text>
+          </Pressable>
+        </View>
+      )}
 
-      <View style={localStyles.innerBottomContainer}>
-        {imageList && imageList.length > 0 && (
+      {imageList && imageList.length > 0 && (
+        <View style={localStyles.innerBottomContainer}>
           <FlatList
             style={localStyles.list}
             keyExtractor={(item, index) => index}
@@ -188,8 +199,8 @@ const Home = ({navigation}) => {
               );
             }}
           />
-        )}
-      </View>
+        </View>
+      )}
     </SafeAreaView>
   );
 };

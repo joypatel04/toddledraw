@@ -1,4 +1,5 @@
 import {StyleSheet} from 'react-native';
+import {primaryFont} from '../../themes/fonts';
 
 const styles = StyleSheet.create({
   colorPickerModal: {
@@ -35,7 +36,7 @@ const styles = StyleSheet.create({
     color: '#333',
     fontWeight: '500',
     fontSize: 14,
-    fontFamily: 'Heiti SC',
+    fontFamily: primaryFont,
   },
   usedColorsContainer: {
     width: '92%',
@@ -49,7 +50,7 @@ const styles = StyleSheet.create({
     color: '#333',
     fontWeight: '500',
     fontSize: 20,
-    fontFamily: 'Heiti SC',
+    fontFamily: primaryFont,
   },
   usedColors: {
     marginTop: 10,

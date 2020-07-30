@@ -1,6 +1,7 @@
 import {StyleSheet} from 'react-native';
 import {red} from '../../themes/colors';
 import {widthPercentageToDP} from 'react-native-responsive-screen';
+import {primaryFont} from '../../themes/fonts';
 
 const styles = StyleSheet.create({
   container: {
@@ -14,9 +15,10 @@ const styles = StyleSheet.create({
   textColor: {
     color: 'black',
     fontWeight: 'bold',
-    fontFamily: 'Heiti SC',
+    fontFamily: primaryFont,
     fontSize: widthPercentageToDP('20%'),
     backgroundColor: red,
+    paddingHorizontal: 10,
   },
 });
 

@@ -1,5 +1,6 @@
 import {StyleSheet} from 'react-native';
 import {darkCharcoal, white, primaryColor} from '../../themes/colors';
+import {primaryFont} from '../../themes/fonts';
 
 const resuableStyles = {
   iconButton: {
@@ -25,14 +26,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 22,
   },
   modalTitleText: {
-    fontFamily: 'Heiti SC',
+    fontFamily: primaryFont,
     fontSize: 18,
     color: darkCharcoal,
     fontWeight: 'bold',
     textAlign: 'center',
   },
   modalSubTitleText: {
-    fontFamily: 'Heiti SC',
+    fontFamily: primaryFont,
     fontSize: 16,
     color: darkCharcoal,
     fontWeight: '600',
@@ -53,7 +54,7 @@ const styles = StyleSheet.create({
   },
   iconText: {
     marginTop: 5,
-    fontFamily: 'Heiti SC',
+    fontFamily: primaryFont,
     fontSize: 14,
     color: darkCharcoal,
     fontWeight: '500',
@@ -68,7 +69,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   doneText: {
-    fontFamily: 'Heiti SC',
+    fontFamily: primaryFont,
     fontSize: 18,
     color: white,
     fontWeight: 'bold',

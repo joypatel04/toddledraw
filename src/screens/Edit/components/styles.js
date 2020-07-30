@@ -1,4 +1,5 @@
 import {StyleSheet} from 'react-native';
+import {primaryFont} from '../../../themes/fonts';
 
 const resuableStyle = {
   iconContainer: {
@@ -52,7 +53,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     fontSize: 14,
     marginLeft: 15,
-    fontFamily: 'Heiti SC',
+    fontFamily: primaryFont,
   },
   bottomContainer: {
     flex: 1,
