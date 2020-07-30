@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, {useEffect, useState} from 'react';
 import {
   FlatList,
@@ -6,7 +7,6 @@ import {
   Platform,
   Linking,
   View,
-  Image,
   Text,
 } from 'react-native';
 import idx from 'idx';
@@ -15,11 +15,9 @@ import ImageColors from 'react-native-image-colors';
 import {SafeAreaView} from 'react-native-safe-area-context';
 
 import ImageTile from '../../components/ImageTile';
+import IntroSlider from '../../components/IntroSlider';
 import styles from '../../themes/styles';
 import localStyles from './styles';
-
-const bannerUri =
-  'https://cdn.dribbble.com/users/872529/screenshots/4373113/naomi-banner.jpg';
 
 const defaultParams = {
   first: 20,
@@ -36,7 +34,6 @@ const Home = ({navigation}) => {
 
   useEffect(() => {
     checkPermission();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -45,7 +42,6 @@ const Home = ({navigation}) => {
     });
 
     return unsubscribe;
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [navigation]);
 
   const getColors = async (uri) => {
@@ -86,7 +82,6 @@ const Home = ({navigation}) => {
       const updatedImageList = imageList.concat(images);
       setImageList(updatedImageList);
     } catch (e) {
-      console.log(e.code);
       if (e.code === 'E_PHOTO_LIBRARY_AUTH_DENIED') {
         setHasPermission(false);
         setPermission('denied');
@@ -107,7 +102,10 @@ const Home = ({navigation}) => {
         );
 
         if (permissionGiven) {
+          setHasPermission(true);
+          setPermission('granted');
           getPhotos();
+          return;
         }
 
         if (!permissionGiven) {
@@ -151,15 +149,12 @@ const Home = ({navigation}) => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={[localStyles.innerTopContainer]}>
-        <View style={localStyles.banner}>
-          <Image source={{uri: bannerUri}} style={[localStyles.banner]} />
-        </View>
-        {/* <View style={localStyles.overlay} /> */}
+        <IntroSlider />
       </View>
       {showPermissionButton && (
         <View style={localStyles.innerBottomPermissionContainer}>
           <Text style={localStyles.contentSubText}>
-            {`Doodle Space" requires access to your ${mediaFolderText}to create your first Doodle`}
+            {`"Doodle Space" requires access to your ${mediaFolderText} to create your first Doodle`}
           </Text>
           <Pressable
             onPress={() => Linking.openSettings()}

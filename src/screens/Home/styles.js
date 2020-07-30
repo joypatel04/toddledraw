@@ -48,14 +48,6 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     marginBottom: wp('2%'),
   },
-  banner: {
-    height: '100%',
-    width: '100%',
-  },
-  overlay: {
-    ...StyleSheet.absoluteFill,
-    backgroundColor: greyShadow,
-  },
   contentText: {
     ...resuableStyle.text,
     color: darkCharcoal,
