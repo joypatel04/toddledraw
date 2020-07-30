@@ -29,4 +29,4 @@ npx react-native run-android
 
 ![Alt text](https://github.com/joypatel04/screenshots/blob/master/iOS-3.gif 'iOS 3')
 
-![Alt text](https://github.com/joypatel04/screenshots/blob/master/iOS-3.gif 'iOS 4')
+![Alt text](https://github.com/joypatel04/screenshots/blob/master/iOS-4.gif 'iOS 4')
