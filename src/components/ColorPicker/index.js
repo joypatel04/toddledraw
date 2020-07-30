@@ -24,7 +24,6 @@ const ColorPicker = ({defaultColor, onColorChange}) => {
         <HueSlider
           value={color.h}
           onValueChange={(h) => {
-            console.log('h', h);
             setColor({...color, h});
             onColorChange({...color, h});
           }}
@@ -35,7 +34,6 @@ const ColorPicker = ({defaultColor, onColorChange}) => {
           color={color}
           value={color.l}
           onValueChange={(l) => {
-            console.log('l', l);
             setColor({...color, l});
             onColorChange({...color, l});
           }}
@@ -46,7 +44,6 @@ const ColorPicker = ({defaultColor, onColorChange}) => {
           color={color}
           value={color.s}
           onValueChange={(s) => {
-            console.log('s', s);
             setColor({...color, s});
             onColorChange({...color, s});
           }}

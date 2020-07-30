@@ -96,7 +96,6 @@ class Edit extends Component {
       strokeWidth,
       usedColors,
     } = this.state;
-    console.log(usedColors, selectedColor);
     let newColor;
     if (!usedColors.includes(selectedColor)) {
       newColor = selectedColor;
@@ -136,7 +135,6 @@ class Edit extends Component {
             usedColors: [newColor, ...newColors],
           });
         } else {
-          console.log(newColor);
           this.setState({
             usedColors: [newColor, ...usedColors],
           });
