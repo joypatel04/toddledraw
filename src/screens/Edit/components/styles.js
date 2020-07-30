@@ -1,5 +1,6 @@
 import {StyleSheet} from 'react-native';
 import {primaryFont} from '../../../themes/fonts';
+import {greyShadow} from '../../../themes/colors';
 
 const resuableStyle = {
   iconContainer: {
@@ -78,6 +79,22 @@ const styles = StyleSheet.create({
   },
   moreIcon: {
     left: -6,
+  },
+  bottomDots: {
+    position: 'absolute',
+    bottom: 0,
+    width: '100%',
+    height: 5,
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    justifyContent: 'flex-end',
+  },
+  dot: {
+    backgroundColor: greyShadow,
+    width: 5,
+    height: 5,
+    borderRadius: 5 / 2,
+    marginLeft: 46,
   },
 });
 

@@ -1,10 +1,11 @@
 import React, {useState, useEffect} from 'react';
 import {View} from 'react-native';
-import PropTypes from 'prop-types';
+import PropTypes, {array} from 'prop-types';
 
 import Pen from '../../../components/DrawingTools/Pen';
 import Eraser from '../../../components/DrawingTools/Eraser';
 import AnimatedComponent from '../../../components/AnimatedComponent';
+import DummyView from './DummyView';
 import localStyles from './styles';
 
 const Footer = ({
@@ -32,19 +33,26 @@ const Footer = ({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedTool]);
+
   return (
-    <View style={[localStyles.bottomContainer]}>
-      <AnimatedComponent index={1} childrenAnimation={penAnimation}>
-        <Pen
-          selectedColor={selectedColor}
-          isActive={selectedTool === 'pen'}
-          onPress={onPressPen}
-        />
-      </AnimatedComponent>
-      <AnimatedComponent index={1} childrenAnimation={earserAnimation}>
-        <Eraser isActive={selectedTool === 'eraser'} onPress={onPressEraser} />
-      </AnimatedComponent>
-    </View>
+    <>
+      <View style={[localStyles.bottomContainer]}>
+        <AnimatedComponent index={1} childrenAnimation={penAnimation}>
+          <Pen
+            selectedColor={selectedColor}
+            isActive={selectedTool === 'pen'}
+            onPress={onPressPen}
+          />
+        </AnimatedComponent>
+        <AnimatedComponent index={1} childrenAnimation={earserAnimation}>
+          <Eraser
+            isActive={selectedTool === 'eraser'}
+            onPress={onPressEraser}
+          />
+        </AnimatedComponent>
+      </View>
+      <DummyView />
+    </>
   );
 };
 

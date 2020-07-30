@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
     height: 90,
   },
   penButton: {
-    marginRight: 25,
+    marginRight: 20,
   },
   penView: {
     marginRight: 30,
@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
   eraseButton: {
-    marginLeft: 25,
+    marginLeft: 20,
   },
   eraserView: {
     marginRight: 30,
