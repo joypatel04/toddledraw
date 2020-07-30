@@ -25,6 +25,8 @@ const Header = ({
   isActiveBrush,
   onFilterPress,
   isActiveFilter,
+  onTextPress,
+  isActiveText,
 }) => {
   const resizeIcon =
     resizeMode === 'contain' ? 'contract-outline' : 'expand-outline';
@@ -68,6 +70,15 @@ const Header = ({
               size={18}
               color={isActiveBrush ? primaryColor : darkCharcoal}
               name={brushIcom}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={localStyles.zoomOutIconContainer}
+            onPress={onTextPress}>
+            <Icon
+              size={18}
+              color={isActiveText ? primaryColor : darkCharcoal}
+              name={'text'}
             />
           </TouchableOpacity>
         </View>
@@ -121,6 +132,8 @@ Header.propTypes = {
   onBrushPress: PropTypes.func,
   onFilterPress: PropTypes.func,
   isActiveFilter: PropTypes.bool,
+  onTextPress: PropTypes.func,
+  isActiveText: PropTypes.bool,
 };
 
 Header.defaultProps = {
@@ -135,6 +148,8 @@ Header.defaultProps = {
   onBrushPress: () => {},
   onFilterPress: () => {},
   isActiveFilter: false,
+  onTextPress: () => {},
+  isActiveText: false,
 };
 
 export default Header;

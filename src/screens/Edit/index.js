@@ -17,6 +17,7 @@ import Share from 'react-native-share';
 
 import AnimatedComponent from '../../components/AnimatedComponent';
 import SwiperOverlay from '../../components/SwiperOverlay';
+import TextInputOverlay from '../../components/TextInputOverlay';
 import ColorPickerModal from '../../components/ColorPickerModal';
 import ThankYouModal from '../../components/ThankYouModal';
 import Header from './components/Header';
@@ -52,6 +53,7 @@ class Edit extends Component {
       strokeWidth: 8,
       isActiveBrush: false,
       isActiveFilter: false,
+      isActiveText: false,
       headerAnimation: getAnimation('slideDownHeader'),
       footerAnimation: null,
       sideAnimation: null,
@@ -59,8 +61,9 @@ class Edit extends Component {
       showColorPicker: false,
       showThankyouModal: false,
       tempImagePath: null,
+      textList: [],
     };
-
+    this.keyboardRef = React.createRef();
     this.panResponder = PanResponder.create({
       onStartShouldSetPanResponder: (evt, gestureState) => true,
       onMoveShouldSetPanResponder: (evt, gestureState) => true,
@@ -260,6 +263,7 @@ class Edit extends Component {
     this.setState({
       selectedTool: null,
       isActiveFilter: false,
+      isActiveText: false,
       isActiveBrush: !isActiveBrush,
       footerAnimation: isActiveBrush
         ? getAnimation('slideDown')
@@ -329,6 +333,27 @@ class Edit extends Component {
 
     this.setState({
       isActiveFilter: !isActiveFilter,
+      isActiveText: false,
+    });
+  };
+
+  onTextPress = () => {
+    const {isActiveBrush, isActiveText} = this.state;
+    if (isActiveBrush) {
+      this.onBrushPress();
+    }
+
+    if (this.keyboardRef && this.keyboardRef.current) {
+      if (this.keyboardRef.current.isFocused()) {
+        this.keyboardRef.current.blur();
+      } else {
+        this.keyboardRef.current.focus();
+      }
+    }
+
+    this.setState({
+      isActiveFilter: false,
+      isActiveText: !isActiveText,
     });
   };
 
@@ -349,6 +374,7 @@ class Edit extends Component {
       strokeWidth,
       isActiveBrush,
       isActiveFilter,
+      isActiveText,
       footerAnimation,
       sideAnimation,
       sidePointAnimation,
@@ -357,6 +383,7 @@ class Edit extends Component {
       headerAnimation,
       showThankyouModal,
       tempImagePath,
+      textList,
     } = this.state;
 
     const AllStrokes = previousStrokes.map((stroke, index) => {
@@ -369,6 +396,7 @@ class Edit extends Component {
     const resizeModeStyle = {
       resizeMode,
     };
+
     return (
       <SafeAreaView style={[styles.container]}>
         <AnimatedComponent
@@ -418,7 +446,30 @@ class Edit extends Component {
                   </View>
                 </ImageBackground>
                 <SwiperOverlay
+                  isActiveFilter={isActiveFilter}
                   pointerEvents={isActiveFilter ? 'auto' : 'none'}
+                />
+                <TextInputOverlay
+                  pointerEvents={isActiveText ? 'auto' : 'none'}
+                  isActiveText={isActiveText}
+                  forwardedRef={this.keyboardRef}
+                  onActiveTextInput={() => {
+                    this.setState({
+                      isActiveText: true,
+                    });
+                  }}
+                  onDeactiveTextInput={() => {
+                    this.setState({
+                      isActiveText: false,
+                    });
+                  }}
+                  onChangeTextList={(text) => {
+                    if (text.length) {
+                      this.setState({
+                        textList: [...textList, text.trim()],
+                      });
+                    }
+                  }}
                 />
               </ViewShot>
             </AnimatedComponent>
@@ -431,6 +482,8 @@ class Edit extends Component {
                 resizeMode={resizeMode}
                 isActiveBrush={isActiveBrush}
                 isActiveFilter={isActiveFilter}
+                isActiveText={isActiveText}
+                onTextPress={() => this.onTextPress()}
                 onBackwardPress={() => this.onBackwardPress()}
                 onForwardPress={() => this.onForwardPress()}
                 shouldDisabledBackward={shouldDisabledBackward}

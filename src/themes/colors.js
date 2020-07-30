@@ -16,3 +16,4 @@ export const redOverlay = 'rgba(255, 0, 0, 0.10)';
 export const azereOverlay = 'rgba(0, 102, 255, 0.10)';
 export const orangeRedOverlay = 'rgba(255, 69, 0, 0.10)';
 export const teaRose = 'rgba(248, 131, 121, 0.10)';
+export const modalOverlay = 'rgba(0, 0, 0, 0.6)';

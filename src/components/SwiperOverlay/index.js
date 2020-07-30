@@ -1,13 +1,14 @@
 import React, {useRef, useState, useEffect} from 'react';
 import {View} from 'react-native';
+import idx from 'idx';
 import ViewPager from '@react-native-community/viewpager';
 import * as Animatable from 'react-native-animatable';
+import PropTypes from 'prop-types';
 
 import {swiperData} from './swiperData';
 import localStyles from './styles';
-import idx from 'idx';
 
-const SwiperOverlay = ({pointerEvents}) => {
+const SwiperOverlay = ({pointerEvents, isActiveFilter}) => {
   const label = useRef();
   const [pageNumber, setPageNumber] = useState(null);
 
@@ -26,9 +27,12 @@ const SwiperOverlay = ({pointerEvents}) => {
     );
   });
 
-  console.log('pageNumber', pageNumber);
+  const zIndex = {
+    zIndex: isActiveFilter ? 1 : 0,
+  };
+
   return (
-    <View pointerEvents={pointerEvents} style={[localStyles.container]}>
+    <View pointerEvents={pointerEvents} style={[localStyles.container, zIndex]}>
       <ViewPager
         onPageSelected={(evt) => {
           if (evt) {
@@ -61,6 +65,10 @@ const SwiperOverlay = ({pointerEvents}) => {
       </Animatable.Text>
     </View>
   );
+};
+
+SwiperOverlay.propTypes = {
+  pointerEvents: PropTypes.string,
 };
 
 export default SwiperOverlay;
