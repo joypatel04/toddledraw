@@ -36,7 +36,6 @@ const SwiperOverlay = ({pointerEvents, isActiveFilter}) => {
       <ViewPager
         onPageSelected={(evt) => {
           if (evt) {
-            console.log(evt.nativeEvent.position);
             const {position} = idx(evt, (_) => _.nativeEvent) || null;
             if (position === 0) {
               setPageNumber(null);
