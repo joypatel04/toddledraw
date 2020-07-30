@@ -7,8 +7,8 @@ import styles from './styles';
 
 const Eraser = ({onPress, isActive}) => (
   <TouchableOpacity
-    disabled={isActive}
     onPress={onPress}
+    disabled={isActive}
     style={[styles.container, styles.eraseButton]}>
     <View style={styles.eraserView}>
       <Image source={eraser} style={styles.eraserIcon} />

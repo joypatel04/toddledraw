@@ -52,12 +52,14 @@ Footer.propTypes = {
   selectedTool: PropTypes.any,
   onPressPen: PropTypes.func,
   onPressEraser: PropTypes.func,
+  isActiveBrush: PropTypes.bool,
 };
 
 Footer.defaultProps = {
   selectedTool: null,
   onPressPen: () => {},
   onPressEraser: () => {},
+  isActiveBrush: false,
 };
 
 export default Footer;

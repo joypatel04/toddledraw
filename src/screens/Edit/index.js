@@ -16,6 +16,7 @@ import Toast from 'react-native-simple-toast';
 import Share from 'react-native-share';
 
 import AnimatedComponent from '../../components/AnimatedComponent';
+import SwiperOverlay from '../../components/SwiperOverlay';
 import ColorPickerModal from '../../components/ColorPickerModal';
 import ThankYouModal from '../../components/ThankYouModal';
 import Header from './components/Header';
@@ -50,6 +51,7 @@ class Edit extends Component {
       selectedColor: primaryColor,
       strokeWidth: 8,
       isActiveBrush: false,
+      isActiveFilter: false,
       headerAnimation: getAnimation('slideDownHeader'),
       footerAnimation: null,
       sideAnimation: null,
@@ -257,6 +259,7 @@ class Edit extends Component {
     const {isActiveBrush} = this.state;
     this.setState({
       selectedTool: null,
+      isActiveFilter: false,
       isActiveBrush: !isActiveBrush,
       footerAnimation: isActiveBrush
         ? getAnimation('slideDown')
@@ -318,6 +321,17 @@ class Edit extends Component {
     }
   };
 
+  onFilterPress = () => {
+    const {isActiveFilter, isActiveBrush} = this.state;
+    if (isActiveBrush) {
+      this.onBrushPress();
+    }
+
+    this.setState({
+      isActiveFilter: !isActiveFilter,
+    });
+  };
+
   render() {
     const {route, navigation} = this.props;
     const bgPrimaryColor = idx(route, (_) => _.params.primaryColor) || '#000';
@@ -334,6 +348,7 @@ class Edit extends Component {
       deactiveAnimation,
       strokeWidth,
       isActiveBrush,
+      isActiveFilter,
       footerAnimation,
       sideAnimation,
       sidePointAnimation,
@@ -374,7 +389,7 @@ class Edit extends Component {
                 }}>
                 <ImageBackground
                   source={{uri: bgImage}}
-                  style={[localStyles.bgImage.primaryColor]}
+                  style={[localStyles.bgImage]}
                   imageStyle={[
                     resizeModeStyle,
                     bgPrimaryColor && {
@@ -402,6 +417,9 @@ class Edit extends Component {
                     </Svg>
                   </View>
                 </ImageBackground>
+                <SwiperOverlay
+                  pointerEvents={isActiveFilter ? 'auto' : 'none'}
+                />
               </ViewShot>
             </AnimatedComponent>
             <AnimatedComponent
@@ -412,6 +430,7 @@ class Edit extends Component {
               <Header
                 resizeMode={resizeMode}
                 isActiveBrush={isActiveBrush}
+                isActiveFilter={isActiveFilter}
                 onBackwardPress={() => this.onBackwardPress()}
                 onForwardPress={() => this.onForwardPress()}
                 shouldDisabledBackward={shouldDisabledBackward}
@@ -428,6 +447,7 @@ class Edit extends Component {
                 }}
                 onDonePress={() => this.onFinishEditing()}
                 onBrushPress={() => this.onBrushPress()}
+                onFilterPress={() => this.onFilterPress()}
                 childrenAnimation={getAnimation('fadeIn')}
               />
             </AnimatedComponent>

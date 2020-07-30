@@ -4,7 +4,11 @@ import PropTypes from 'prop-types';
 import Icon from 'react-native-vector-icons/dist/Ionicons';
 
 import AnimatedComponent from '../../../components/AnimatedComponent';
-import {darkCharcoal, lightCharcoal} from '../../../themes/colors';
+import {
+  darkCharcoal,
+  lightCharcoal,
+  primaryColor,
+} from '../../../themes/colors';
 import localStyles from './styles';
 
 const Header = ({
@@ -19,10 +23,13 @@ const Header = ({
   childrenAnimation,
   onBrushPress,
   isActiveBrush,
+  onFilterPress,
+  isActiveFilter,
 }) => {
   const resizeIcon =
     resizeMode === 'contain' ? 'contract-outline' : 'expand-outline';
   const brushIcom = isActiveBrush ? 'brush' : 'brush-outline';
+  const filterIcon = isActiveFilter ? 'color-filter' : 'color-filter-outline';
 
   return (
     <AnimatedComponent
@@ -39,12 +46,29 @@ const Header = ({
           <TouchableOpacity
             style={localStyles.zoomOutIconContainer}
             onPress={onFitToScreenPress}>
-            <Icon size={20} color={darkCharcoal} name={resizeIcon} />
+            <Icon
+              size={20}
+              color={resizeMode === 'contain' ? primaryColor : darkCharcoal}
+              name={resizeIcon}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={localStyles.zoomOutIconContainer}
+            onPress={onFilterPress}>
+            <Icon
+              size={18}
+              color={isActiveFilter ? primaryColor : darkCharcoal}
+              name={filterIcon}
+            />
           </TouchableOpacity>
           <TouchableOpacity
             style={localStyles.zoomOutIconContainer}
             onPress={onBrushPress}>
-            <Icon size={18} color={darkCharcoal} name={brushIcom} />
+            <Icon
+              size={18}
+              color={isActiveBrush ? primaryColor : darkCharcoal}
+              name={brushIcom}
+            />
           </TouchableOpacity>
         </View>
         <View style={localStyles.rightContainer}>
@@ -95,6 +119,8 @@ Header.propTypes = {
   shouldDisabledBackward: PropTypes.bool,
   childrenAnimation: PropTypes.object,
   onBrushPress: PropTypes.func,
+  onFilterPress: PropTypes.func,
+  isActiveFilter: PropTypes.bool,
 };
 
 Header.defaultProps = {
@@ -107,6 +133,8 @@ Header.defaultProps = {
   shouldDisabledForward: true,
   shouldDisabledBackward: true,
   onBrushPress: () => {},
+  onFilterPress: () => {},
+  isActiveFilter: false,
 };
 
 export default Header;
