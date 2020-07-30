@@ -15,39 +15,55 @@ const ColorPickerModal = ({
   onColorChange,
   onCloseModal,
   usedColors,
-  allColors,
-}) => (
-  <Modal
-    coverScreen
-    style={localStyles.colorPickerModal}
-    animationIn="fadeIn"
-    animationOut="fadeOut"
-    backgroundColor={white}
-    isVisible={showColorPicker}>
-    <SafeAreaView style={localStyles.colorPickerView}>
-      <View style={localStyles.doneContainer}>
-        <Pressable
-          style={localStyles.doneButton}
-          onPress={() => onCloseModal()}>
-          <Text>Done</Text>
-        </Pressable>
-      </View>
-      <ColorPicker
-        defaultColor={selectedColor}
-        onColorChange={(color) => {
-          onColorChange(fromHsv(color));
-        }}
-        style={localStyles.colorPicker}
-      />
-      <View style={localStyles.usedColorsContainer}>
-        {!isEmpty(usedColors) && (
-          <Text style={localStyles.usedColorsText}>Recently used</Text>
-        )}
-        <View style={localStyles.usedColors}>{allColors}</View>
-      </View>
-    </SafeAreaView>
-  </Modal>
-);
+  onPressRecentColor,
+}) => {
+  const AllColors = usedColors.map((item) => {
+    const backgroundColor = {
+      backgroundColor: item,
+    };
+    return (
+      <Pressable
+        key={item}
+        onPress={() => onPressRecentColor(item)}
+        style={[localStyles.usedColorBtn, backgroundColor]}>
+        <View style={[localStyles.usedColorBtn, backgroundColor]} />
+      </Pressable>
+    );
+  });
+
+  return (
+    <Modal
+      coverScreen
+      style={localStyles.colorPickerModal}
+      animationIn="fadeIn"
+      animationOut="fadeOut"
+      backgroundColor={white}
+      isVisible={showColorPicker}>
+      <SafeAreaView style={localStyles.colorPickerView}>
+        <View style={localStyles.doneContainer}>
+          <Pressable
+            style={localStyles.doneButton}
+            onPress={() => onCloseModal()}>
+            <Text>Done</Text>
+          </Pressable>
+        </View>
+        <ColorPicker
+          defaultColor={selectedColor}
+          onColorChange={(color) => {
+            onColorChange(fromHsv(color));
+          }}
+          style={localStyles.colorPicker}
+        />
+        <View style={localStyles.usedColorsContainer}>
+          {!isEmpty(usedColors) && (
+            <Text style={localStyles.usedColorsText}>Recently used</Text>
+          )}
+          <View style={localStyles.usedColors}>{AllColors}</View>
+        </View>
+      </SafeAreaView>
+    </Modal>
+  );
+};
 
 ColorPickerModal.propTypes = {
   showColorPicker: PropTypes.bool,

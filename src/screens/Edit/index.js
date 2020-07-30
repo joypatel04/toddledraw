@@ -96,7 +96,7 @@ class Edit extends Component {
       strokeWidth,
       usedColors,
     } = this.state;
-
+    console.log(usedColors, selectedColor);
     let newColor;
     if (!usedColors.includes(selectedColor)) {
       newColor = selectedColor;
@@ -136,6 +136,7 @@ class Edit extends Component {
             usedColors: [newColor, ...newColors],
           });
         } else {
+          console.log(newColor);
           this.setState({
             usedColors: [newColor, ...usedColors],
           });
@@ -349,25 +350,6 @@ class Edit extends Component {
       return this._renderSvgElement(stroke, index);
     });
 
-    const AllColors = usedColors.map((item) => {
-      const backgroundColor = {
-        backgroundColor: item,
-      };
-      return (
-        <Pressable
-          key={item}
-          onPress={() =>
-            this.setState({
-              showColorPicker: false,
-              selectedColor: item,
-            })
-          }
-          style={[localStyles.usedColorBtn, backgroundColor]}>
-          <View style={[localStyles.usedColorBtn, backgroundColor]} />
-        </Pressable>
-      );
-    });
-
     const imageLocation = Platform.OS === 'ios' ? 'Photos' : 'Gallary';
     const shouldDisabledBackward = previousStrokes.length === 0;
     const shouldDisabledForward = nextStrokes.length === 0;
@@ -510,7 +492,6 @@ class Edit extends Component {
             </AnimatedComponent>
             <ColorPickerModal
               showColorPicker={showColorPicker}
-              allColors={AllColors}
               usedColors={usedColors}
               selectedColor={selectedColor}
               onCloseModal={() => {
@@ -521,6 +502,12 @@ class Edit extends Component {
                   selectedColor: color,
                 });
               }}
+              onPressRecentColor={(item) =>
+                this.setState({
+                  showColorPicker: false,
+                  selectedColor: item,
+                })
+              }
             />
             <ThankYouModal
               showThankyouModal={showThankyouModal}
