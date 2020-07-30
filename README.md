@@ -22,3 +22,5 @@ npx react-native run-android
 ```
 
 ### Screenshots
+
+![Alt text](https://github.com/joypatel04/toddledraw/screenshots/iOS-1.gif?raw=true 'Title')
