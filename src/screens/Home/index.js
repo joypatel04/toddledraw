@@ -5,6 +5,8 @@ import {
   PermissionsAndroid,
   Platform,
   Linking,
+  View,
+  Image,
 } from 'react-native';
 import idx from 'idx';
 import CameraRoll from '@react-native-community/cameraroll';
@@ -14,6 +16,9 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 import ImageTile from '../../components/ImageTile';
 import styles from '../../themes/styles';
 import localStyles from './styles';
+
+const bannerUri =
+  'https://cdn.dribbble.com/users/872529/screenshots/4373113/naomi-banner.jpg';
 
 const defaultParams = {
   first: 20,
@@ -139,6 +144,12 @@ const Home = ({navigation}) => {
 
   return (
     <SafeAreaView style={styles.container}>
+      <View style={[localStyles.innerTopContainer]}>
+        <View style={localStyles.banner}>
+          <Image source={{uri: bannerUri}} style={[localStyles.banner]} />
+        </View>
+        {/* <View style={localStyles.overlay} /> */}
+      </View>
       {permission === 'denied' ||
         (shouldOpenSetting && (
           <Button
@@ -146,36 +157,39 @@ const Home = ({navigation}) => {
             onPress={() => Linking.openSettings()}
           />
         ))}
-      {imageList && imageList.length > 0 && (
-        <FlatList
-          style={localStyles.list}
-          keyExtractor={(item, index) => index}
-          data={imageList}
-          numColumns={3}
-          showsVerticalScrollIndicator={false}
-          onEndReached={() => {
-            if (hasMore) {
-              getPhotos();
-            }
-          }}
-          renderItem={({item, index}) => {
-            const marginRight =
-              (index + 1) % 3 !== 0
-                ? {
-                    marginRight: 10,
-                  }
-                : {};
-            return (
-              <ImageTile
-                style={marginRight}
-                imageStyle={marginRight}
-                uri={item.uri}
-                onPress={() => onSelectImage(item)}
-              />
-            );
-          }}
-        />
-      )}
+
+      <View style={localStyles.innerBottomContainer}>
+        {imageList && imageList.length > 0 && (
+          <FlatList
+            style={localStyles.list}
+            keyExtractor={(item, index) => index}
+            data={imageList}
+            numColumns={3}
+            showsVerticalScrollIndicator={false}
+            onEndReached={() => {
+              if (hasMore) {
+                getPhotos();
+              }
+            }}
+            renderItem={({item, index}) => {
+              const marginRight =
+                (index + 1) % 3 !== 0
+                  ? {
+                      marginRight: 10,
+                    }
+                  : {};
+              return (
+                <ImageTile
+                  style={marginRight}
+                  imageStyle={marginRight}
+                  uri={item.uri}
+                  onPress={() => onSelectImage(item)}
+                />
+              );
+            }}
+          />
+        )}
+      </View>
     </SafeAreaView>
   );
 };

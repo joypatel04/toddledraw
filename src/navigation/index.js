@@ -1,5 +1,6 @@
 import * as React from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
+import SplashScreen from '../screens/SplashScreen';
 import Home from '../screens/Home';
 import Edit from '../screens/Edit';
 const Stack = createStackNavigator();
@@ -7,7 +8,7 @@ const Stack = createStackNavigator();
 function Navigation() {
   return (
     <Stack.Navigator
-      initialRouteName="Home"
+      initialRouteName="SplashScreen"
       screenOptions={{
         headerShown: false,
         cardStyle: {backgroundColor: 'transparent'},
@@ -29,6 +30,7 @@ function Navigation() {
         }),
       }}
       mode="modal">
+      <Stack.Screen name="SplashScreen" component={SplashScreen} />
       <Stack.Screen name="Home" component={Home} />
       <Stack.Screen name="Edit" component={Edit} />
     </Stack.Navigator>
