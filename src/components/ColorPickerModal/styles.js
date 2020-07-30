@@ -22,8 +22,9 @@ const styles = StyleSheet.create({
   doneContainer: {
     width: '100%',
     height: 45,
-    justifyContent: 'center',
-    alignItems: 'flex-end',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   doneButton: {
     paddingHorizontal: 16,

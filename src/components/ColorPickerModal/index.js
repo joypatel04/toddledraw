@@ -43,6 +43,16 @@ const ColorPickerModal = ({
         <View style={localStyles.doneContainer}>
           <Pressable
             style={localStyles.doneButton}
+            onPress={() => {
+              if (!isEmpty(usedColors)) {
+                onColorChange(usedColors[0]);
+              }
+              onCloseModal();
+            }}>
+            <Text>Cancel</Text>
+          </Pressable>
+          <Pressable
+            style={localStyles.doneButton}
             onPress={() => onCloseModal()}>
             <Text>Done</Text>
           </Pressable>
