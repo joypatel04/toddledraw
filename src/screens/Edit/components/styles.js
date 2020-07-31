@@ -1,6 +1,7 @@
 import {StyleSheet} from 'react-native';
 import {primaryFont} from '../../../themes/fonts';
 import {greyShadow} from '../../../themes/colors';
+import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 
 const resuableStyle = {
   iconContainer: {
@@ -87,14 +88,14 @@ const styles = StyleSheet.create({
     height: 5,
     flexDirection: 'row',
     alignItems: 'flex-end',
-    justifyContent: 'flex-end',
+    justifyContent: 'space-around',
+    overflow: 'visible',
   },
   dot: {
     backgroundColor: greyShadow,
     width: 5,
     height: 5,
     borderRadius: 5 / 2,
-    marginLeft: 46,
   },
 });
 
